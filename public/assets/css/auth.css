@@ -1,0 +1,300 @@
+/* ======================================= */
+/* === 🎨 STYLES CSS INTÉGRÉS (auth.css) === */
+/* ======================================= */
+
+:root {
+    /* Variables de couleur */
+    --primary-blue: #4A90E2;
+    --primary-dark: #222;
+    --light-bg: #f7f7f7;
+    --border-color: #ddd;
+    --error-red: #e74c3c;
+}
+
+/* 🔄 MODIFICATIONS CLÉS POUR LE PLEINE PAGE SANS SCROLL DU BODY */
+html, body {
+    height: 100%; /* S'assurer que le body prend toute la hauteur de la fenêtre */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light-bg);
+  
+    /* Centrage et pleine page sans défilement */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centre verticalement le conteneur principal */
+    min-height: 100vh; /* Couvre toute la hauteur de l'écran */
+    overflow: hidden; /* Empêche le défilement du body */
+    overflow-x: hidden;
+}
+/* FIN DES MODIFICATIONS BODY */
+
+
+.auth-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    
+    /* S'assure que le conteneur prend une hauteur fixe pour respecter la fenêtre */
+    height: 95vh; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    overflow: hidden; 
+    background-color: #fff;
+}
+
+/* --- 1. Panneau Visuel (Gauche) --- */
+.visual-panel {
+    flex: 1;
+    position: relative;
+    background-color: var(--primary-blue);
+    overflow: hidden;
+    display: none; 
+}
+
+@media (min-width: 768px) {
+    .visual-panel {
+        display: block;
+        flex: 1.5; 
+    }
+}
+
+.visual-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+/* --- 1.1 Texte Animé (Superposé) --- */
+.visual-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.visual-text span {
+    font-size: 2.5vw;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: text-fade-in 12s infinite ease-out;
+}
+
+.visual-text span:nth-child(1) { animation-delay: 0s; }
+.visual-text span:nth-child(2) { animation-delay: 3s; }
+.visual-text span:nth-child(3) { animation-delay: 6s; }
+.visual-text span:nth-child(4) { animation-delay: 9s; }
+
+@keyframes text-fade-in {
+    0%, 5% { opacity: 0; transform: translateY(20px); }
+    15% { opacity: 1; transform: translateY(0); }
+    25% { opacity: 1; transform: translateY(0); }
+    35%, 100% { opacity: 0; transform: translateY(-20px); }
+}
+
+/* --- 2. Panneau Formulaire (Droite) --- */
+.form-panel {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    
+    /* Gestion du défilement interne */
+    height: 90%; 
+    overflow-y: auto; 
+}
+
+@media (max-width: 767px) {
+    .form-panel {
+        height: 100%;
+    }
+}
+
+.client-area-form {
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+h1 {
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 2em;
+}
+
+.subtitle {
+    color: #666;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+}
+
+/* --- boutton --- */
+.tabs {
+    display: flex;
+    background: var(--light-bg);
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 4px;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    background: transparent;
+    color: #666;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.tab-button.active {
+    background: #fff;
+    color: var(--primary-blue);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 2.2 Champs de Saisie --- */
+.input-field-container {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.required {
+    color: var(--error-red);
+    font-weight: 700;
+}
+
+input[type="text"], 
+input[type="email"], 
+input[type="password"],
+input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    color: var(--primary-dark);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+input[type="file"] {
+    padding: 8px 12px;
+    line-height: 1.5;
+}
+
+.input-group-row {
+    display: flex;
+    gap: 15px;
+}
+
+.input-group-row .input-field-container {
+    flex: 1;
+}
+
+.error-message {
+    display: block;
+    color: var(--error-red);
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+input[aria-invalid="true"] {
+    border-color: var(--error-red) !important;
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+.form-checkbox label {
+    margin-left: 8px;
+    margin-bottom: 0;
+    font-weight: normal;
+    color: #555;
+    display: inline;
+}
+.form-checkbox a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+.form-checkbox a:hover {
+    text-decoration: underline;
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 25px;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* --- 2.3 Bouton Soumettre --- */
+.submit-button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-blue);
+    color: white;
+    font-size: 1.05em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-button:hover {
+    background-color: #357ABD;
+}
+
+.submit-button .icon {
+    margin-right: 10px;
+    font-size: 1.1em;
+}

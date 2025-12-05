@@ -12,7 +12,7 @@
         <div class="menu-header">MENU</div>
         <ul>
             <li class="active">
-                <a href="/"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+                <a href="#"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
             </li>
             <li><a href="#"><i class="fas fa-user-circle"></i> <span>Compte Client</span></a></li>
             <li><a href="#"><i class="fas fa-exchange-alt"></i> <span>Transaction</span></a></li>
@@ -58,15 +58,25 @@
                 </ul>
             </li>
             <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
-            <li class="logout"><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span></a></li>
+            <li class="logout">
+                <form method="POST" action="{{ route('auth.logout') }}" id="logout-form">
+                    @csrf 
+                    <a href="{{ route('auth.logout') }}" 
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                    style="cursor: pointer;"
+                    >
+                        <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
+                    </a>
+                </form>
+            </li>
         </ul>
     </nav>
 
     <div class="user-info">
-        <img src="{{ asset('assets/images/Roronoa-Zoro-Wanted-Poster-7-scaled.webp') }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ Auth::user()->profile_image }}" alt="Profile Picture" class="profile-pic">
         <div class="username-details">
-            <div class="username">Raymond</div>
-            <div class="email">raymond@gmail.com</div>
+            <div class="username">{{ Auth::user()->name }}</div>
+            <div class="email">{{ Auth::user()->email }}</div>
         </div>
     </div>
 </aside>
