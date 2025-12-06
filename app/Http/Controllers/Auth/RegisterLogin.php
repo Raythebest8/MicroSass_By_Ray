@@ -104,7 +104,7 @@ class RegisterLogin extends Controller
                 return redirect()->route('admin.dashboard')->with('success', 'Connexion administrateur réussie !');
             }
             
-            return redirect()->route('dashboard')->with('success', 'Connexion réussie !');
+            return redirect()->route('users.dashboard')->with('success', 'Connexion réussie !');
         }
 
         return back()

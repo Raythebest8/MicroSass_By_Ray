@@ -58,10 +58,10 @@
                 </ul>
             </li>
             <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
-            <li class="logout">
+            <li class="logout" style=" padding: 10px 10px 10px 10px ; margin: 0px 0 0px 10px;">
                 <form method="POST" action="{{ route('auth.logout') }}" id="logout-form">
                     @csrf 
-                    <a href="{{ route('auth.logout') }}" 
+                    <a href="{{ route('auth.logout') }} "
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                     style="cursor: pointer;"
                     >
