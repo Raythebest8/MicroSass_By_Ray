@@ -1,21 +1,20 @@
 @extends('layouts.users')
 @section('content')
-        
-       
-        <div class="px-4 md:px-8">
+          
+<div class="px-4 md:px-8">
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-indigo-500 flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">Total Emprunté</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-total">15 000 €</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-total">150 000 Fcfa</p>
                     </div>
                     <div class="bg-indigo-50 dark:bg-indigo-900 p-3 rounded-full text-indigo-600 dark:text-indigo-400 text-xl">💰</div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-emerald-500 flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">Remboursé</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-paid">8 450 €</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-paid">28 450 Fcfa</p>
                     </div>
                     <div class="bg-emerald-50 dark:bg-emerald-900 p-3 rounded-full text-emerald-600 dark:text-emerald-400 text-xl">✅</div>
                 </div>
@@ -23,7 +22,7 @@
                     <div>
                         <p class="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">Prochaine Échéance</p>
                         <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">15 Oct</p>
-                        <p class="text-xs text-amber-600 font-medium dark:text-amber-400">320.00 €</p>
+                        <p class="text-xs text-amber-600 font-medium dark:text-amber-400">8320 Fcfa </p>
                     </div>
                     <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-full text-amber-600 dark:text-amber-400 text-xl">📅</div>
                 </div>
@@ -51,11 +50,11 @@
                                 <div>
                                     <p class="text-sm font-medium text-gray-800 dark:text-white">Paiement reçu</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">Prêt Immobilier - 15 Septembre</p>
-                                    <p class="text-sm font-bold text-green-600 dark:text-green-400 mt-1">- 450.00 €</p>
+                                    <p class="text-sm font-bold text-green-600 dark:text-green-400 mt-1">- 450 000 Fcfa</p>
                                 </div>
                             </li>
                             <li class="flex items-start pb-4 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                                <div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full h-8 w-8 flex items-center justify-center mr-3 mt-1 text-xs">ℹ</div>
+                                <div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full h-8 w-8 flex items-center justify-center mr-3 mt-1 text-xs">i</div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-800 dark:text-white">Nouveau document disponible</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">Relevé annuel 2024</p>
@@ -228,6 +227,289 @@
                             <button class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm">Annuler</button>
                             <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-md">Sauvegarder</button>
                         </div>
+             </div> 
+</div>
+
+
+<!-- <section id="partenaires" class="py-16 md:py-24 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        
+        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl mb-4">
+            Nos institutions partenaires
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-12">
+            Comparez et choisissez la meilleure offre pour votre projet
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-lg mr-4">
+                            <svg class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-2M5 21H3m2 0h2m4 0V9m7 12V9m0 3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-2a1 1 0 011-1h3a1 1 0 011 1v2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Banque Nationale</h3>
+                            <p class="text-sm text-yellow-500 dark:text-yellow-400">4.8 /5</p>
+                        </div>
                     </div>
+                    <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        Offre spéciale
+                    </span>
+                </div>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    De 1 000 € à 50 000 €
+                </p>
+
+                <div class="flex justify-between items-center mt-auto mb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                        <span class="text-lg font-bold text-green-600 dark:text-green-400">2.9%</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Taux dès</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">24h</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Réponse</span>
+                    </div>
+                </div>
+
+                <a href="#" class="w-full text-center py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Demander un prêt
+                </a>
             </div>
+
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg mr-4">
+                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Crédit Plus</h3>
+                            <p class="text-sm text-yellow-500 dark:text-yellow-400">4.6 /5</p>
+                        </div>
+                    </div>
+                    </div>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    De 2 000 € à 40 000 €
+                </p>
+
+                <div class="flex justify-between items-center mt-auto mb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                        <span class="text-lg font-bold text-green-600 dark:text-green-400">3.2%</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Taux dès</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">48h</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Réponse</span>
+                    </div>
+                </div>
+
+                <a href="#" class="w-full text-center py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Demander un prêt
+                </a>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg mr-4">
+                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Finance Facile</h3>
+                            <p class="text-sm text-yellow-500 dark:text-yellow-400">4.5 /5</p>
+                        </div>
+                    </div>
+                    </div>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    De 1 500 € à 35 000 €
+                </p>
+
+                <div class="flex justify-between items-center mt-auto mb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                        <span class="text-lg font-bold text-green-600 dark:text-green-400">3.5%</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Taux dès</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">24h</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Réponse</span>
+                    </div>
+                </div>
+
+                <a href="#" class="w-full text-center py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Demander un prêt
+                </a>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-red-100 dark:bg-red-900/50 rounded-lg mr-4">
+                            <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Prêt Express</h3>
+                            <p class="text-sm text-yellow-500 dark:text-yellow-400">4.7 /5</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        Réponse rapide
+                    </span>
+                </div>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    De 1 000 € à 30 000 €
+                </p>
+
+                <div class="flex justify-between items-center mt-auto mb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                        <span class="text-lg font-bold text-green-600 dark:text-green-400">3.8%</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Taux dès</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">12h</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Réponse</span>
+                    </div>
+                </div>
+
+                <a href="#" class="w-full text-center py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Demander un prêt
+                </a>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg mr-4">
+                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Banque Solidaire</h3>
+                            <p class="text-sm text-yellow-500 dark:text-yellow-400">4.4 /5</p>
+                        </div>
+                    </div>
+                    </div>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    De 3 000 € à 45 000 €
+                </p>
+
+                <div class="flex justify-between items-center mt-auto mb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                        <span class="text-lg font-bold text-green-600 dark:text-green-400">3.1%</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Taux dès</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">48h</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Réponse</span>
+                    </div>
+                </div>
+
+                <a href="#" class="w-full text-center py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Demander un prêt
+                </a>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-pink-100 dark:bg-pink-900/50 rounded-lg mr-4">
+                            <svg class="h-6 w-6 text-pink-600 dark:text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Crédit Liberté</h3>
+                            <p class="text-sm text-yellow-500 dark:text-yellow-400">4.6 /5</p>
+                        </div>
+                    </div>
+                    </div>
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    De 2 000 € à 40 000 €
+                </p>
+
+                <div class="flex justify-between items-center mt-auto mb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                        <span class="text-lg font-bold text-green-600 dark:text-green-400">3.3%</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Taux dès</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">36h</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Réponse</span>
+                    </div>
+                </div>
+
+                <a href="#" class="w-full text-center py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                    Demander un prêt
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</section> -->
+
 @endsection

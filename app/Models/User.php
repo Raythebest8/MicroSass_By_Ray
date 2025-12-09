@@ -52,4 +52,37 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Événement exécuté AVANT l'enregistrement d'un nouvel utilisateur
+        static::creating(function ($user) {
+            
+            // Le numéro de compte est généré UNIQUEMENT si le rôle est 'user'
+            if ($user->role === 'user' || $user->role === 'client') {
+                $user->numero_compte = self::generateUniqueAccountNumber();
+            } 
+            
+            // Si l'utilisateur est un 'admin', 'manager', etc., le champ 'numero_compte' restera NULL
+        });
+    }
+
+    /**
+     * Génère un numéro de compte unique (méthode non modifiée).
+     */
+    public static function generateUniqueAccountNumber()
+    {
+        $prefixe = 'MF' . date('y'); 
+        
+        do {
+            $randomNumber = mt_rand(10000000, 99999999);
+            $accountNumber = $prefixe . $randomNumber;
+        } while (self::where('numero_compte', $accountNumber)->exists());
+
+        return $accountNumber;
+    }
+
 }

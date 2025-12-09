@@ -3,7 +3,33 @@
 @section('content')
 
 <div class="max-w-4xl mx-auto my-12 p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-indigo-100 dark:border-indigo-900">
+  
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6 dark:bg-green-900 dark:text-green-300 dark:border-green-700" role="alert">
+            <strong class="font-bold">Succès!</strong>
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 dark:bg-red-900 dark:text-red-300 dark:border-red-700" role="alert">
+            <strong class="font-bold">Erreur!</strong>
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
     
+   
+    @if ($errors->any())
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-6 dark:bg-yellow-900 dark:text-yellow-300 dark:border-yellow-700" role="alert">
+            <strong class="font-bold">Attention!</strong>
+            <ul class="mt-2 list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="mb-8 text-center border-b pb-4 border-gray-200 dark:border-gray-700">
         <h3 class="text-3xl font-extrabold text-indigo-700 dark:text-indigo-400">
             Demande de Prêt Particulier
@@ -49,8 +75,8 @@
                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white">
                 </div>
                 <div>
-                    <label for="tel" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Téléphone</label>
-                    <input type="tel" name="tel" id="tel" required placeholder="Ex: 00 00 00 00"
+                    <label for="telephone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Téléphone</label>
+                    <input type="telephone" name="telephone" id="telephone" required placeholder="Ex: 00 00 00 00"
                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white">
                 </div>
 
@@ -87,7 +113,7 @@
 
                 <div class="md:col-span-2">
                     <label for="nom_employeur" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom de l'Employeur / Entreprise</label>
-                    <input type="text" name="nom_employeur" id="nom_employeur" required placeholder="Nom de votre lieu de travail"
+                    <input type="text" name="nom_employeur" id="nom_employeur"  placeholder="Nom de votre lieu de travail"
                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white">
                 </div>
                 
@@ -102,11 +128,11 @@
                     <select name="type_emploi" id="type_emploi" required
                             class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white">
                         <option value="">Sélectionner</option>
-                        <option value="cdi">CDI</option>
-                        <option value="cdd">CDD</option>
-                        <option value="fonctionnaire">Fonctionnaire</option>
-                        <option value="independant">Indépendant/Libéral</option>
-                        <option value="autre">Autre</option>
+                        <option value="CDI">CDI</option>
+                        <option value="CDD">CDD</option>
+                        <option value="Fonctionnaire">Fonctionnaire</option>
+                        <option value="Indépendant">Indépendant/Libéral</option>
+                        <option value="Autre">Autre</option>
                     </select>
                 </div>
 
@@ -188,7 +214,7 @@
 
                 <div>
                     <label for="preuves_revenu" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bulletins de Salaire / Preuves de Revenu</label>
-                    <input type="file" name="preuves_revenu[]" id="preuves_revenu" multiple required
+                    <input type="file" name="preuves_revenu" id="preuves_revenu" required
                            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-700 dark:file:bg-indigo-900 dark:file:text-indigo-300">
                 </div>
 
