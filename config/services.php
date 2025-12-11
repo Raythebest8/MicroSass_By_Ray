@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+  
+
+'slack' => [
+    'notifications' => env('SLACK_WEBHOOK_URL'),
+    // Si vous utilisez plusieurs canaux Slack, vous pouvez en définir plusieurs ici.
+],
+
 ];

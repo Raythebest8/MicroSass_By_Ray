@@ -30,7 +30,7 @@ class UserController extends Controller
     public function paiements()
     {
         return view('user.paiements.index', [
-            // 'activeLoans' => $activeLoans, 
+             
         ]);
     }
 

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-// Assurez-vous d'importer le modèle User
+use App\Models\User; 
 
 class Particulier extends Model
 {

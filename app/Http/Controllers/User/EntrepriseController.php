@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Termwind\Components\Dd;
+use App\Notifications\NewDemandePret;
 
 class EntrepriseController extends Controller
 {
@@ -140,6 +141,19 @@ class EntrepriseController extends Controller
                 $demande->update($paths);
 
             }); // Fin de la transaction
+
+            if ($demande) { 
+            // 🚨 Trouve l'administrateur à notifier 🚨
+            $admin = User::where('role', 'admin')->first(); 
+            
+            if ($admin) {
+                // Déclenche la notification Slack/Mail
+                $admin->notify(new NewDemandePret($demande, 'entrepise')); 
+                Log::info("Notification de nouvelle demande entrepise (#{$demande->id}) envoyée.");
+            } else {
+                Log::warning("Aucun utilisateur Administrateur trouvé.");
+            }
+        }
 
             // 4. REDIRECTION EN CAS DE SUCCÈS
             return redirect()

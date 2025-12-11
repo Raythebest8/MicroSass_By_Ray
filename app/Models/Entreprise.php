@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User; 
+
 
 class Entreprise extends Model
 {
@@ -74,7 +76,7 @@ class Entreprise extends Model
     }
 
     public function echeances()
-{
-    return $this->morphMany(Echeance::class, 'demande');
-}
+    {
+        return $this->morphMany(Echeance::class, 'demande');
+    }
 }

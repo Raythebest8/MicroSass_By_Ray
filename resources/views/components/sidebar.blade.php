@@ -12,19 +12,51 @@
         <div class="menu-header">MENU</div>
         <ul>
             <li class="active">
-                <a href="#"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+                <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
             </li>
-            <li><a href="#"><i class="fas fa-user-circle"></i> <span>Compte Client</span></a></li>
-            <li><a href="#"><i class="fas fa-exchange-alt"></i> <span>Transaction</span></a></li>
-            <li><a href="#"><i class="fas fa-credit-card"></i> <span>Paiement</span></a></li>
-            <li><a href="#"><i class="fas fa-hand-holding-usd"></i> <span>Demande de prêt</span></a></li>
-            <li><a href="#"><i class="fas fa-history"></i> <span>Historique</span></a></li>
-            <li><a href="#"><i class="fas fa-chart-line"></i> <span>Suivi</span></a></li>
-            <li><a href="#"><i class="fas fa-money-check-alt"></i> <span>Prêt</span></a></li>
-            <li><a href="#"><i class="fas fa-undo"></i> <span>Remboursement</span></a></li>
-            <li><a href="#"><i class="fas fa-users"></i> <span>Utilisateurs</span></a></li>
-            <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> <span>Rapports</span></a></li>
-            <li><a href="#"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+            <li>
+                <a href="#"><i class="fas fa-user-circle"></i> <span>Compte Client</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-exchange-alt"></i> <span>Transaction</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-credit-card"></i> <span>Paiement</span></a>
+            </li>
+
+            <li>
+                <a href="{{ route('paiements.retards') }}"><i class="fas fa-hand-holding-usd"></i> <span>Demande de prêt</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-history"></i> <span>Historique</span></a>
+           </li>
+
+            <li>
+                <a href="#"><i class="fas fa-chart-line"></i> <span>Suivi</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-money-check-alt"></i> <span>Prêt</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-undo"></i> <span>Remboursement</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-users"></i> <span>Utilisateurs</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span>Rapports</span></a>
+            </li>
+
+            <li>
+                <a href="#"><i class="fas fa-bell"></i> <span>Notifications</span></a>
+            </li>
             
             <li class="vertical-dropdown" onclick="toggleVerticalDropdown(this)">
                 <a href="javascript:void(0);">

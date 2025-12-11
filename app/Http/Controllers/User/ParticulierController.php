@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB; // Pour la transaction
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth; // Pour l'utilisateur authentifié
 use Illuminate\Support\Facades\Log; // Pour le débogage en cas d'erreur
+use App\Models\User; 
+use App\Notifications\NewDemandePret;
 
 class ParticulierController extends Controller
 {
@@ -109,6 +111,19 @@ class ParticulierController extends Controller
                 $demande->update($paths);
 
             }); // Fin de la transaction
+
+            if ($demande) { 
+            // 🚨 Trouve l'administrateur à notifier 🚨
+            $admin = User::where('role', 'admin')->first(); 
+            
+            if ($admin) {
+                // Déclenche la notification Slack/Mail
+                $admin->notify(new NewDemandePret($demande, 'particulier')); 
+                Log::info("Notification de nouvelle demande particulier (#{$demande->id}) envoyée.");
+            } else {
+                Log::warning("Aucun utilisateur Administrateur trouvé.");
+            }
+        }
 
             // 4. REDIRECTION EN CAS DE SUCCÈS
             return redirect()

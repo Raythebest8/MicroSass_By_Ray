@@ -3,11 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterLogin;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\AdminDemandeController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\User\DemandePretController;
 use App\Http\Controllers\User\PaiementController;
 use App\Models\Role;
+use App\Http\Controllers\Admin\AdminPretController;
+use App\Http\Controllers\Admin\NotificationController;
 
 Route::get('/', function () {
     return view('Auth/register' );
@@ -28,20 +31,24 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     // Autres routes admin
+    Route::get('/paiements/retards', [App\Http\Controllers\Admin\AdminPretController::class, 'latePaymentsIndex'])->name('paiements.retards');
+
+    Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+
+Route::post('/demandes/particulier/{demande}/approuver', [AdminDemandeController::class, 'approuverDemande'])
+    ->middleware(['auth', 'role:admin']) // Assurez-vous que ce middleware existe
+    ->name('admin.demandes.approuver');
 });
 // routes/web.php
 
-// Routes utilisateur normal (Reste en dehors du groupement principal si vous voulez que les autres routes ci-dessous soient dans un UserController group)
-// Assurez-vous que le dashboard n'est pas défini deux fois.
+
 Route::get('/dashboard', [App\Http\Controllers\User\UserController::class, 'dashboard'])
      ->middleware(['auth', 'role:user'])
      ->name('dashboard');
 
-// Groupement des routes sous le middleware d'authentification
-// IMPORTANT : J'ai entouré le groupe de routes de users. d'un middleware 'auth'.
 Route::middleware(['auth', 'role:user'])->group(function () {
     
-    // Utilisez 'users.' comme préfixe pour le nommage (Name prefix)
     Route::controller(UserController::class)->name('users.')->group(function () {
         // Tableau de bord (Peut être retiré si défini plus haut)
          Route::get('/dashboard', 'dashboard')->name('dashboard'); 
@@ -59,8 +66,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         Route::post('/demande/entreprise', [App\Http\Controllers\User\EntrepriseController::class, 'submitEntreprise'])->name('demande.submitEntreprise');
 
         // Pages liées aux prêts
-        Route::get('/pretactif', 'pretactif')->name('pretactif');
-        
+        Route::get('/pretactif', [App\Http\Controllers\User\DemandePretController::class, 'historique'])->name('pretactif');        
         
         // Informations de l'utilisateur
         Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('profile.index');
