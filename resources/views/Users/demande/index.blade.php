@@ -26,7 +26,7 @@
     
     <div class="p-6 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
         <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-5 border-b pb-3 border-gray-200 dark:border-gray-600">
-            Sélectionnez votre Type de Demandeur
+            Sélectionnez votre Type de Demande que vous voulez faire
         </h4>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

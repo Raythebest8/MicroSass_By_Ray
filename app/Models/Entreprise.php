@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Document;
 use App\Models\User; 
 
 
 class Entreprise extends Model
 {
     use HasFactory; 
+        protected $appends = ['type'];
+
 
     protected $fillable = [
         'nom_entreprise',
@@ -58,6 +62,11 @@ class Entreprise extends Model
        
     ];
     
+
+    public function getTypeAttribute()
+    {
+        return 'entreprise';
+    }
     /**
      * Une demande d'entreprise appartient à l'utilisateur qui l'a soumise.
      */
@@ -78,5 +87,20 @@ class Entreprise extends Model
     public function echeances()
     {
         return $this->morphMany(Echeance::class, 'demande');
+    }
+
+    /**
+     * Une demande d'entreprise a plusieurs documents associés.
+     */
+    public function documents(): HasMany
+    {
+        // Remplacez Document::class par le nom de votre modèle de document réel (ex: App\Models\Document::class)
+        // La clé étrangère doit correspondre à la colonne de votre table 'documents' qui pointe vers la table 'entreprises'.
+        // Si la colonne est nommée 'entreprise_id' dans la table 'documents', c'est la bonne configuration.
+        return $this->hasMany(Document::class, 'entreprise_id');
+        
+        // Si vous utilisez une clé générique comme 'demande_id' pour les deux types de demandes :
+        // return $this->hasMany(Document::class, 'demande_id')->where('demande_type', 'entreprise');
+        // (La méthode ci-dessus est plus complexe, la première est recommandée si vous avez des clés séparées.)
     }
 }

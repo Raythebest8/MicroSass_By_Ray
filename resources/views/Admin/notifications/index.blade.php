@@ -68,7 +68,7 @@
                                     {{-- Détails --}}
                                     <small class="text-muted">
                                         Demande {{ $notification->data['demande_id'] }} par 
-                                        <span class="font-weight-bold">{{ $notification->data['client_name'] ?? 'Inconnu' }}</span> - Montant: {{ $notification->data['montant'] ?? 'N/A' }}
+                                        <span class="font-weight-bold">{{ $notification->data['$user->nom'] ?? 'Inconnu' }}</span> - Montant: {{ $notification->data['montant'] ?? 'N/A' }}
                                     </small>
                                 </div>
 

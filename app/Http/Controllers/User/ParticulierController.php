@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\user;
+namespace App\Http\Controllers\User; // Assurez-vous que le namespace est correct (User ou user)
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Particulier; 
+use App\Models\Document; // <-- NÉCESSAIRE : Pour enregistrer les documents
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB; // Pour la transaction
+use Illuminate\Support\Facades\DB; 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth; // Pour l'utilisateur authentifié
-use Illuminate\Support\Facades\Log; // Pour le débogage en cas d'erreur
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Log; 
 use App\Models\User; 
 use App\Notifications\NewDemandePret;
+use Illuminate\Validation\ValidationException; // Ajouté pour une meilleure gestion des erreurs
 
 class ParticulierController extends Controller
 {
@@ -20,9 +22,8 @@ class ParticulierController extends Controller
      */
     public function formParticulier()
     {
-        // Retourne la vue du formulaire
         return view('users.demande.particulier');
-    }   
+    }
 
     /**
      * Traite la soumission du formulaire et enregistre la demande.
@@ -35,109 +36,115 @@ class ParticulierController extends Controller
         }
 
         // 2. DÉFINITION ET EXÉCUTION DE LA VALIDATION
-        $validatedData = $request->validate([
-            // --- 1. Informations Personnelles et de Contact ---
-            'nom'               => ['required', 'string', 'max:255'],
-            'prenom'            => ['required', 'string', 'max:255'],
-            'email'             => ['required', 'string', 'email', 'max:255'],
-            'telephone'         => ['required', 'string', 'max:20'],
-            'adresse'           => ['required', 'string', 'max:255'],
-            'ville'             => ['required', 'string', 'max:100'],
-            'code_postal'       => ['required', 'string', 'max:10'],
-            
-            // --- 2. Informations Professionnelles et Financières ---
-            'nom_employeur'     => ['nullable', 'string', 'max:255'],
-            'secteur_activite'  => ['required', 'string', 'max:255'],
-            'type_emploi'       => ['required', 'string', Rule::in(['CDI', 'CDD', 'Indépendant', 'Autre', 'Fonctionnaire'])], 
-            'revenu_mensuel'    => ['required', 'numeric', 'min:50000'],
-            
-            // --- 3. Détails du Prêt ---
-            'montant_souhaite'  => ['required', 'numeric', 'min:100000', 'max:10000000'], 
-            'duree_mois'        => ['required', 'integer', 'min:3', 'max:84'],
-            'motif'             => ['required', 'string', 'min:4'],
+        try {
+            $validatedData = $request->validate([
+                // --- 1. Informations Personnelles et de Contact ---
+                'nom'                   => ['required', 'string', 'max:255'],
+                'prenom'                => ['required', 'string', 'max:255'],
+                'email'                 => ['required', 'string', 'email', 'max:255'],
+                'telephone'             => ['required', 'string', 'max:20'],
+                'adresse'               => ['required', 'string', 'max:255'],
+                'ville'                 => ['required', 'string', 'max:100'],
+                'code_postal'           => ['required', 'string', 'max:10'],
+                
+                // --- 2. Informations Professionnelles et Financières ---
+                'nom_employeur'         => ['nullable', 'string', 'max:255'],
+                'secteur_activite'      => ['required', 'string', 'max:255'],
+                'type_emploi'           => ['required', 'string', Rule::in(['CDI', 'CDD', 'Indépendant', 'Autre', 'Fonctionnaire'])], 
+                'revenu_mensuel'        => ['required', 'numeric', 'min:50000'],
+                
+                // --- 3. Détails du Prêt ---
+                'montant_souhaite'      => ['required', 'numeric', 'min:100000', 'max:10000000'], 
+                'duree_mois'            => ['required', 'integer', 'min:3', 'max:84'],
+                'motif'                 => ['required', 'string', 'min:4'],
 
-            // --- 4. Documents Justificatifs (Uploads) ---
-            'justificatif_id'       => ['required', 'file', 'mimes:pdf,jpg,png', 'max:3072'], // 3MB
-            'justificatif_domicile' => ['required', 'file', 'mimes:pdf,jpg,png', 'max:3072'], // 3MB
-            'preuves_revenu'        => ['required', 'file', 'mimes:pdf', 'max:5120'], // 5MB
-            'rib'                   => ['required', 'file', 'mimes:pdf,jpg,png', 'max:2048'], // 2MB
-        ]);
-
-        $paths = [];
+                // --- 4. Documents Justificatifs (Uploads) ---
+                'justificatif_id'       => ['required', 'file', 'mimes:pdf,jpg,png', 'max:3072'], 
+                'justificatif_domicile' => ['required', 'file', 'mimes:pdf,jpg,png', 'max:3072'], 
+                'preuves_revenu'        => ['required', 'file', 'mimes:pdf', 'max:5120'], 
+                'rib'                   => ['required', 'file', 'mimes:pdf,jpg,png', 'max:2048'],
+            ]);
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        }
+        
         $demande = null;
         
-        // --- 3. TRANSACTION CRITIQUE : Assure l'atomicité de l'opération ---
+        // --- 3. TRANSACTION CRITIQUE ---
         try {
-            DB::transaction(function () use ($validatedData, $request, &$demande, &$paths) {
+            DB::transaction(function () use ($validatedData, $request, &$demande) { 
                 
-                // 3.A. CRÉATION DE L'ENREGISTREMENT INITIAL (avec chemins vides)
-                $demandeData = array_merge($validatedData, [
-                    'user_id' => Auth::id(),
-                    'statut' => 'en attente',
-                    'admin_id' => null,
-                    'date_traitement' => null,
-                    // Initialisation des chemins pour l'insertion
-                    'justificatif_id' => '', 
-                    'justificatif_domicile' => '',
-                    'preuves_revenu' => '',
-                    'rib' => '',
-                ]);
+                // Clés des fichiers à EXCLURE de la création de l'enregistrement Particulier
+                $fileKeys = ['justificatif_id', 'justificatif_domicile', 'preuves_revenu', 'rib'];
                 
-                $demande = Particulier::create($demandeData);
+                // Construction des données à insérer dans la table `particuliers` (sans les chemins de fichiers)
+                $initialDataToCreate = array_merge(
+                    array_diff_key($validatedData, array_flip($fileKeys)), // <-- C'est cette ligne qui corrige l'erreur SQL 1364
+                    [
+                        'user_id' => Auth::id(),
+                        'statut' => 'en attente',
+                        'admin_id' => null,
+                        'date_traitement' => null,
+                    ]
+                );
+
+                // 3.A. CRÉATION DE L'ENREGISTREMENT INITIAL 
+                $demande = Particulier::create($initialDataToCreate);
                 $demandeId = $demande->id;
                 $storagePath = "demandes/particuliers/{$demandeId}";
 
-                // 3.B. UPLOAD ET ENREGISTREMENT DES CHEMINS
-                $fields = [
-                    'justificatif_id',
-                    'justificatif_domicile',
-                    'preuves_revenu',
-                    'rib'
+                // 3.B. UPLOAD ET CRÉATION DES ENREGISTREMENTS DANS LA TABLE 'documents'
+                
+                $documentsToUpload = [
+                    'justificatif_id'       => 'Pièce d\'Identité',
+                    'justificatif_domicile' => 'Justificatif de Domicile',
+                    'preuves_revenu'        => 'Preuves de Revenu (PDF)',
+                    'rib'                   => 'RIB Personnel'
                 ];
 
-                foreach ($fields as $field) {
+                foreach ($documentsToUpload as $field => $label) {
                     if ($request->hasFile($field)) {
                         $file = $request->file($field);
-                        // Nom de fichier standardisé : nom_du_champ.extension_originale
-                        $fileName = $field . '.' . $file->getClientOriginalExtension();
                         
-                        // Stockage : utilise le disque 'public' par défaut
+                        // Stockage
+                        $fileName = $field . '.' . $file->getClientOriginalExtension();
                         $path = $file->storeAs($storagePath, $fileName, 'public');
-                        $paths[$field] = $path;
+                        
+                        // CRÉATION D'UNE ENTRÉE DANS LA TABLE 'documents'
+                        Document::create([
+                            'particulier_id' => $demande->id, // Clé étrangère
+                            'type_document' => $field,      
+                            'nom_afficher' => $label,       
+                            'chemin_stockage' => $path,
+                            'mime_type' => $file->getMimeType(),
+                        ]);
                     }
                 }
 
-                // 3.C. MISE À JOUR DE L'ENREGISTREMENT AVEC LES CHEMINS RÉELS
-                $demande->update($paths);
+                // 3.C. MISE À JOUR : Supprimé car inutile, tout est dans `documents`.
 
             }); // Fin de la transaction
 
             if ($demande) { 
-            // 🚨 Trouve l'administrateur à notifier 🚨
-            $admin = User::where('role', 'admin')->first(); 
-            
-            if ($admin) {
-                // Déclenche la notification Slack/Mail
-                $admin->notify(new NewDemandePret($demande, 'particulier')); 
-                Log::info("Notification de nouvelle demande particulier (#{$demande->id}) envoyée.");
-            } else {
-                Log::warning("Aucun utilisateur Administrateur trouvé.");
+                // Notification de l'administrateur
+                $admin = User::where('role', 'admin')->first(); 
+                
+                if ($admin) {
+                    $admin->notify(new NewDemandePret($demande, 'particulier')); 
+                    Log::info("Notification de nouvelle demande particulier (#{$demande->id}) envoyée.");
+                } else {
+                    Log::warning("Aucun utilisateur Administrateur trouvé.");
+                }
             }
-        }
 
             // 4. REDIRECTION EN CAS DE SUCCÈS
             return redirect()
-                ->route('users.pretactif') // Assurez-vous que cette route existe
+                ->route('users.pretactif')
                 ->with('success', 'Votre demande de prêt personnel a été soumise avec succès et est en cours de traitement.');
 
         } catch (\Exception $e) {
-            // 5. GESTION DES ERREURS (Rollback si l'une des étapes a échoué)
+            // 5. GESTION DES ERREURS
             Log::error("Erreur lors de la soumission de la demande particulier: " . $e->getMessage(), ['exception' => $e]);
-
-            // Suppression des fichiers temporaires ou partiels (si l'erreur a lieu APRES l'upload)
-            // L'utilisation de DB::transaction garantit que les données DB sont annulées, 
-            // mais les fichiers uploadés doivent être gérés manuellement si l'erreur survient après leur store.
-            // Pour une solution simple, on se contente de l'annulation DB et de l'affichage d'un message générique.
             
             return back()
                 ->withInput()
@@ -145,21 +152,18 @@ class ParticulierController extends Controller
         }
     }
 
-   
+    /**
+     * Affiche l'historique des demandes de prêt pour particulier de l'utilisateur.
+     */
+    public function pretactif()
+    {
+        $userId = Auth::id();
+        
+        $demandes = Particulier::where('user_id', $userId)
+                             ->whereIn('statut', ['validée', 'en cours', 'en attente']) 
+                             ->orderBy('created_at', 'desc')
+                             ->get();
 
-public function pretactif()
-{
-    // 1. Récupérer l'ID de l'utilisateur connecté
-    $userId = Auth::id();
-
-   
-    $demandes = Particulier::where('user_id', $userId)
-                             // Pour le débogage, on affiche tout d'abord :
-                           ->whereIn('statut', ['validée', 'en cours', 'en attente']) 
-                            ->orderBy('created_at', 'desc')
-                            ->get();
-
-    // 3. Passer la variable $demandes à la vue
-    return view('Users.pretactif', compact('demandes'));
-}
+        return view('Users.pretactif', compact('demandes'));
+    }
 }

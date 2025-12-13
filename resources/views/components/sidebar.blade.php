@@ -27,7 +27,7 @@
             </li>
 
             <li>
-                <a href="{{ route('paiements.retards') }}"><i class="fas fa-hand-holding-usd"></i> <span>Demande de prêt</span></a>
+                <a href="{{ route('admin.demandes.index') }}"><i class="fas fa-hand-holding-usd"></i> <span>Demande de prêt</span></a>
             </li>
 
             <li>
@@ -35,7 +35,7 @@
            </li>
 
             <li>
-                <a href="#"><i class="fas fa-chart-line"></i> <span>Suivi</span></a>
+                <a href="{{ route('paiements.retards') }}"><i class="fas fa-chart-line"></i> <span>Suivi</span></a>
             </li>
 
             <li>
@@ -55,7 +55,7 @@
             </li>
 
             <li>
-                <a href="#"><i class="fas fa-bell"></i> <span>Notifications</span></a>
+                <a href="{{ route('admin.notifications.index')}}"><i class="fas fa-bell"></i> <span>Notifications</span></a>
             </li>
             
             <li class="vertical-dropdown" onclick="toggleVerticalDropdown(this)">
@@ -105,9 +105,9 @@
     </nav>
 
     <div class="user-info">
-        <img src="{{ Auth::user()->profile_image }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ asset('storage/' . Auth::user()->image_path) }}" alt="Profile Picture" class="profile-pic">
         <div class="username-details">
-            <div class="username">{{ Auth::user()->name }}</div>
+            <div class="username">{{ Auth::user()->prenom }}</div>
             <div class="email">{{ Auth::user()->email }}</div>
         </div>
     </div>

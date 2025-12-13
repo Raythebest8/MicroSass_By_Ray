@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Document;
 use App\Models\User; 
 
 class Particulier extends Model
 {
+    
+
+    protected $appends = ['type'];
     protected $fillable = [
         // --- Infos de base et Professionnelles ---
         'nom',
@@ -42,6 +47,11 @@ class Particulier extends Model
     
     // --- RELATIONS ELOQUENT (CARDINALITÉ) ---
 
+     public function getTypeAttribute()
+    {
+        return 'particulier';
+    }
+
     /**
      * Une demande appartient à l'utilisateur qui l'a soumise.
      */
@@ -64,4 +74,9 @@ class Particulier extends Model
 {
     return $this->morphMany(Echeance::class, 'demande');
 }
+public function documents(): HasMany
+    {
+        // Supposons que la clé étrangère dans la table 'documents' soit 'particulier_id'
+        return $this->hasMany(Document::class, 'particulier_id');
+    }
 }

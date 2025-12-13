@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Entreprise; 
 use App\Models\User; 
+use App\Models\Document; 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -64,107 +65,124 @@ class EntrepriseController extends Controller
 
                 // --- Étape 4: Documents Justificatifs (Uploads) ---
                 'statuts_rcm'       => ['required', 'file', 'mimes:pdf,jpg,png', 'max:5120'], 
-                
-                // Champs multiples
-                // 'bilan_comptes'     => ['required', 'array', 'min:1'],
                 'bilan_comptes.*'   => ['file', 'mimes:pdf', 'max:5120'], 
-
                 'plan_tresorerie'   => ['required', 'file', 'mimes:pdf,jpg,png', 'max:5120'], 
-                
-                // Champs multiples
-                // 'releves_bancaires' => ['required', 'array', 'min:1'],
                 'releves_bancaires.*' => ['file', 'mimes:pdf,jpg,png', 'max:5120'], 
-                
                 'rib_entreprise'    => ['required', 'file', 'mimes:pdf,jpg,png', 'max:2048'],
             ]);
         } catch (ValidationException $e) {
-            // Laisse Laravel gérer la redirection avec les erreurs
             return back()->withErrors($e->errors())->withInput();
         }
 
-        $paths = [];
         $demande = null;
         
         // --- 3. TRANSACTION CRITIQUE ---
         try {
-            DB::transaction(function () use ($validatedData, $request, &$demande, &$paths) {
+            DB::transaction(function () use ($validatedData, $request, &$demande) {
                 
-                // 3.A. CRÉATION DE L'ENREGISTREMENT INITIAL (SANS les chemins de fichiers)
-                $initialData = array_merge($validatedData, [
-                    'user_id' => Auth::id(),
-                    'statut' => 'en attente',
-                    'admin_id' => null,
-                    'date_traitement' => null,
-                ]);
+                // 3.A. CRÉATION DE L'ENREGISTREMENT INITIAL
                 
-                // Retirer les clés des fichiers de l'ensemble de données initiales avant 'create'
+                // Clés des fichiers à retirer avant la création de l'enregistrement dans la table 'entreprises'
                 $fileKeys = ['statuts_rcm', 'bilan_comptes', 'plan_tresorerie', 'releves_bancaires', 'rib_entreprise'];
-                $initialDataToCreate = array_diff_key($initialData, array_flip($fileKeys));
+                
+                $initialDataToCreate = array_merge(
+                    array_diff_key($validatedData, array_flip($fileKeys)),
+                    [
+                        'user_id' => Auth::id(),
+                        'statut' => 'en attente',
+                        'admin_id' => null,
+                        'date_traitement' => null,
+                    ]
+                );
 
                 // Création initiale de l'enregistrement dans la base de données
                 $demande = Entreprise::create($initialDataToCreate);
                 $demandeId = $demande->id;
                 $storagePath = "demandes/entreprises/{$demandeId}";
 
-                // 3.B. UPLOAD ET ENREGISTREMENT DES CHEMINS
+                // 3.B. UPLOAD ET CRÉATION DES ENREGISTREMENTS DANS LA TABLE 'documents'
 
-                $singleFields = ['statuts_rcm', 'plan_tresorerie', 'rib_entreprise'];
-                $multipleFields = ['bilan_comptes', 'releves_bancaires'];
+                $singleFields = [
+                    'statuts_rcm' => 'Statuts et RCM', 
+                    'plan_tresorerie' => 'Plan de Trésorerie', 
+                    'rib_entreprise' => 'RIB Entreprise'
+                ];
+                $multipleFields = [
+                    'bilan_comptes' => 'Bilan et Comptes Annuels', 
+                    'releves_bancaires' => 'Relevés Bancaires'
+                ];
                 
                 // Traitement des fichiers UNQUES
-                foreach ($singleFields as $field) {
+                foreach ($singleFields as $field => $label) {
                     if ($request->hasFile($field)) {
                         $file = $request->file($field);
-                        // Utilisation du nom de champ comme préfixe pour le nom de fichier
+                        
+                        // Stockage
                         $fileName = $field . '.' . $file->getClientOriginalExtension();
                         $path = $file->storeAs($storagePath, $fileName, 'public');
-                        $paths[$field] = $path;
+                        
+                        // CRÉATION DE L'ENREGISTREMENT DANS LA TABLE 'documents'
+                        Document::create([
+                            'entreprise_id' => $demande->id, 
+                            'type_document' => $field,      
+                            'nom_afficher' => $label,       
+                            'chemin_stockage' => $path,
+                            'mime_type' => $file->getMimeType(),
+                        ]);
                     }
                 }
 
-                // Traitement des fichiers MULTIPLES (Tableau de chemins)
-                foreach ($multipleFields as $field) {
+                // Traitement des fichiers MULTIPLES
+                foreach ($multipleFields as $field => $label) {
                     if ($request->hasFile($field)) {
-                        $currentPaths = [];
                         foreach ($request->file($field) as $index => $file) {
+                            
+                            // Stockage
                             $fileName = $field . '_' . ($index + 1) . '.' . $file->getClientOriginalExtension();
                             $path = $file->storeAs($storagePath, $fileName, 'public');
-                            $currentPaths[] = $path;
+                            
+                            // CRÉATION DE L'ENREGISTREMENT DANS LA TABLE 'documents'
+                            Document::create([
+                                'entreprise_id' => $demande->id, 
+                                'type_document' => $field,      
+                                'nom_afficher' => "{$label} (Fichier " . ($index + 1) . ")", 
+                                'chemin_stockage' => $path,
+                                'mime_type' => $file->getMimeType(),
+                            ]);
                         }
-                        // STOCKAGE EN TANT QUE TABLEAU PHP - Laravel (avec casts) le convertira en JSON
-                        $paths[$field] = $currentPaths; 
                     }
                 }
                 
-                // 3.C. MISE À JOUR DE L'ENREGISTREMENT AVEC LES CHEMINS RÉELS
-                // N'oublie pas : les colonnes 'bilan_comptes' et 'releves_bancaires' DOIVENT être castées en 'array' dans le modèle.
-                $demande->update($paths);
+                // 3.C. MISE À JOUR : Plus aucune mise à jour des chemins sur le modèle Entreprise n'est nécessaire
+                // puisque tout est dans la table `documents`.
 
             }); // Fin de la transaction
 
             if ($demande) { 
-            // 🚨 Trouve l'administrateur à notifier 🚨
-            $admin = User::where('role', 'admin')->first(); 
-            
-            if ($admin) {
-                // Déclenche la notification Slack/Mail
-                $admin->notify(new NewDemandePret($demande, 'entrepise')); 
-                Log::info("Notification de nouvelle demande entrepise (#{$demande->id}) envoyée.");
-            } else {
-                Log::warning("Aucun utilisateur Administrateur trouvé.");
+                // Notification de l'administrateur
+                $admin = User::where('role', 'admin')->first(); 
+                
+                if ($admin) {
+                    $admin->notify(new NewDemandePret($demande, 'entrepise')); 
+                    Log::info("Notification de nouvelle demande entrepise (#{$demande->id}) envoyée.");
+                } else {
+                    Log::warning("Aucun utilisateur Administrateur trouvé.");
+                }
             }
-        }
 
             // 4. REDIRECTION EN CAS DE SUCCÈS
             return redirect()
-                ->route('users.pretactif') // Assurez-vous que cette route existe
+                ->route('users.pretactif')
                 ->with('success', 'Votre demande de prêt pour entreprise a été soumise avec succès et est en cours d\'analyse.');
 
         } catch (\Exception $e) {
             // 5. GESTION DES ERREURS
             Log::error("Erreur critique lors de la soumission de la demande entreprise (ID User: " . Auth::id() . "): " . $e->getMessage(), ['exception' => $e]);
             
-            // Retourne à l'utilisateur un message générique
+            // Si une erreur survient APRÈS l'upload mais avant la fin de la transaction, 
+            // la transaction annule l'enregistrement en base, mais les fichiers restent sur le disque. 
+            // C'est un compromis accepté en l'absence de gestion sophistiquée du nettoyage des fichiers.
+            
             return back()
                 ->withInput()
                 ->with('error', 'Une erreur critique est survenue lors de l\'enregistrement de votre demande. Nos équipes sont alertées. Veuillez réessayer plus tard.'); 

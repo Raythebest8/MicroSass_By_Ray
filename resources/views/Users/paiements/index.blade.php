@@ -4,10 +4,17 @@
 
 <div class="max-w-7xl mx-auto my-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl">
 
-    {{-- Ligne 8 (où nous avons corrigé l'erreur précédente) --}}
-    <h3 class="text-3xl font-bold mb-8 text-gray-800 dark:text-white border-b pb-4 dark:border-gray-700">
-        Historique de Paiements
-    </h3>
+    <div class="flex justify-between items-center mb-8 border-b pb-4 dark:border-gray-700">
+        <h3 class="text-3xl font-bold text-gray-800 dark:text-white">
+            Historique de Paiements
+        </h3> 
+        
+        {{-- NOUVEAU BOUTON DE PAIEMENT --}}
+        <a href="#" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-800 focus:outline-none focus:border-green-800 focus:ring focus:ring-green-300 disabled:opacity-25 transition">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+            Effectuer un Paiement
+        </a>
+    </div>
 
     <div class="bg-white dark:bg-gray-800 p-0 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
