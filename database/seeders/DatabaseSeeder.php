@@ -27,6 +27,10 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'nom' => 'Kokodoko',
             'prenom' => 'raymond',
+            'telephone' => '+228 98774655',
+            'situation_matrimonial'=>'celibataire',
+            'profession'=>'professeur',
+
             'email' => 'kokodokoraymond@gmail.com',
             'password' => bcrypt('raythebest00'),
             'role' => 'user', 

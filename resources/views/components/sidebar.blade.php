@@ -15,7 +15,7 @@
                 <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
             </li>
             <li>
-                <a href="#"><i class="fas fa-user-circle"></i> <span>Compte Client</span></a>
+                <a href="{{route('admin.compte_client.index')}}"><i class="fas fa-user-circle"></i> <span>Compte Client</span></a>
             </li>
 
             <li>

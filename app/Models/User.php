@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,6 +18,9 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'email',
+        'telephone',
+        'profession',
+        'situation_matrimonial',
         'password',
         'image_path',
         'role',
@@ -36,7 +41,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
+
     /**
      * Vérifier si l'utilisateur est admin
      */
@@ -60,12 +65,12 @@ class User extends Authenticatable
 
         // Événement exécuté AVANT l'enregistrement d'un nouvel utilisateur
         static::creating(function ($user) {
-            
+
             // Le numéro de compte est généré UNIQUEMENT si le rôle est 'user'
             if ($user->role === 'user' || $user->role === 'client') {
                 $user->numero_compte = self::generateUniqueAccountNumber();
-            } 
-            
+            }
+
             // Si l'utilisateur est un 'admin', 'manager', etc., le champ 'numero_compte' restera NULL
         });
     }
@@ -75,8 +80,8 @@ class User extends Authenticatable
      */
     public static function generateUniqueAccountNumber()
     {
-        $prefixe = 'MF' . date('y'); 
-        
+        $prefixe = 'MF' . date('y');
+
         do {
             $randomNumber = mt_rand(10000000, 99999999);
             $accountNumber = $prefixe . $randomNumber;
@@ -84,5 +89,4 @@ class User extends Authenticatable
 
         return $accountNumber;
     }
-
 }

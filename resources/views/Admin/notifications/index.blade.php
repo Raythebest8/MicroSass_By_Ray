@@ -31,7 +31,7 @@
                     
                     {{-- Bouton Marquer tout comme lu --}}
                     @if (Auth::user()->unreadNotifications->count() > 0)
-                        <form method="POST" action="{{ route('admin.notifications.mark_all_read') }}">
+                        <form method="POST" action="{{ route('admin.notifications.read') }}">
                             @csrf
                             <button type="submit" class="btn btn-sm btn-outline-success">
                                 <i class="fas fa-check-double"></i> Marquer tout comme lu

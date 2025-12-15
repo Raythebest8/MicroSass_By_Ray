@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('numero_compte', 20)->unique()->nullable();
             $table->string('nom');
             $table->string('prenom');
+            $table->string('telephone')->nullable();
+            $table->string('profession')->nullable();
+            $table->string('situation_matrimonial')->nullable();
             $table->string('email')->unique();
             $table->string('password');
             $table->string('image_path')->nullable(); // ton image
-            $table->enum('role', ['user', 'admin'])->default('user'); // rôle de l'utilisateur
+            $table->enum('role', ['user', 'admin', 'manager'])->default('user'); // rôle de l'utilisateur
             $table->rememberToken();
             $table->timestamps();
         });

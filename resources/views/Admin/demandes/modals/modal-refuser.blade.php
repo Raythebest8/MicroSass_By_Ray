@@ -14,7 +14,7 @@
                 </button>
             </div>
             
-            <form action="{{ route('admin.demande.rejeter', ['type' => $demande->type, 'demandeId' => $demande->id]) }}" method="POST">
+            <form action="{{ route('admin.demandes.rejeter', ['type' => $demande->type, 'demandeId' => $demande->id]) }}" method="POST">
                 @csrf
 
                 {{-- CORPS DU MODAL --}}

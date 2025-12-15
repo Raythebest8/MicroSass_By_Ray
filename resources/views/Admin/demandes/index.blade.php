@@ -3,7 +3,7 @@
 @section('content')
 
 <style>
-/* --- STYLES CSS --- */
+/* --- VOS STYLES CSS CONSERVÉS --- */
 :root {
     --primary-color: #007bff; /* Bleu principal */
     --success-color: #28a745;
@@ -19,7 +19,7 @@
 .page-title { color: var(--primary-color); font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; }
 .card-admin { background: white; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); margin-bottom: 30px; }
 .card-header-flex { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
-.search-area { display: flex; align-items: center; width: 300px; } /* Ajusté la largeur pour l'espace */
+.search-area { display: flex; align-items: center; width: 400px; }
 .icon-muted { color: var(--muted-color); margin-right: 10px; }
 .input-search { flex-grow: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; }
 .filters-area { display: flex; gap: 10px; }
@@ -31,6 +31,7 @@
 .data-table th, .data-table td { padding: 12px 15px; text-align: left; vertical-align: middle; }
 .data-table tbody tr:nth-child(even) { background-color: #f3f3f3; }
 .table-row-hover:hover { background-color: #e9ecef; }
+/* --- ATTENTION : J'ai retiré ici les styles 'header-sort' inutiles pour votre demande --- */
 .user-info-flex { display: flex; align-items: center; }
 .avatar-sm { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1px solid var(--border-color); }
 .user-name { font-weight: bold; }
@@ -41,7 +42,7 @@
 .badge-en_attente { background-color: var(--warning-color); color: #333; }
 .badge-validee { background-color: var(--success-color); color: white; }
 .badge-rejetee { background-color: var(--danger-color); color: white; }
-.action-buttons-flex { display: flex; gap: 10px; align-items: center; } /* Élargi le gap */
+.action-buttons-flex { display: flex; gap: 5px; }
 .btn { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1; text-decoration: none; transition: background-color 0.2s; }
 .btn-info { background-color: var(--primary-color); color: white; }
 .btn-success { background-color: var(--success-color); color: white; }
@@ -49,12 +50,31 @@
 .card-footer-center { padding: 15px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center; }
 .text-center-empty { text-align: center; padding: 40px; color: var(--muted-color); }
 .text-center-empty i { color: #ccc; margin-bottom: 10px; }
+/* --- AJOUTEZ CECI DANS VOTRE BLOC <style> DANS index.blade.php --- */
+/* resources/views/index.blade.php (dans la balise <style>) */
 
-/* Styles pour modals Bootstrap si vous utilisez un template custom */
-.modal-backdrop { z-index: 10400 !important; }
-.modal { z-index: 10500 !important; }
-body { position: initial !important; overflow: auto !important; }
-.modal-open { overflow: auto !important; }
+/* * Force les éléments du modal à être au-dessus 
+ * de tous les autres éléments de la page (comme votre sidebar ou header)
+ */
+.modal-backdrop {
+    /* Normalement 1040 */
+    z-index: 10400 !important;
+}
+
+.modal {
+    /* Normalement 1050 (doit être supérieur au backdrop) */
+    z-index: 10500 !important;
+}
+body {
+    position: initial !important; 
+    overflow: auto !important; 
+}
+
+.modal-open {
+    /* Assurez-vous que l'overflow n'est pas caché lorsque le modal est ouvert */
+    overflow: auto !important; 
+}
+@media (max-width: 768px) { /* ... styles responsive ... */ }
 </style>
 
 <div class="container">
@@ -68,10 +88,6 @@ body { position: initial !important; overflow: auto !important; }
                 <i class="fas fa-search icon-muted"></i>
                 <input type="text" class="input-search" placeholder="Rechercher...">
             </div>
-
-            {{-- CONTENEUR POUR LES BOUTONS D'ACTION RAPIDE (CIBLE JS) --}}
-            <div id="dynamic-actions-top" class="action-buttons-flex">
-                </div>
             
             <div class="filters-area">
                 <select class="select-filter">
@@ -104,19 +120,14 @@ body { position: initial !important; overflow: auto !important; }
                     <tbody>
                         @forelse ($demandes as $demande)
                             @php
-                                // Assurez-vous que le statut est bien 'en_attente', 'validee' ou 'rejetee'
-                                $statut = strtolower(str_replace([' ', '-'], '_', $demande->statut));
-                                $statusLabel = ucfirst(str_replace('_', ' ', $statut));
+                                $statut = strtolower(str_replace(' ', '_', $demande->statut));
+                                $statusLabel = str_replace('_', ' ', $demande->statut);
                             @endphp
                             <tr class="table-row-hover">
                                 {{-- 1. NOM --}}
                                 <td data-label="Nom">
                                     <div class="user-info-flex">
-                                        {{-- CORRECTION ICI : Utilisation de asset('storage/') et gestion du cas null --}}
-                                        <img src="{{ asset('storage/' . ($demande->user->image_path ?? 'default/default-photo.png')) }}" 
-                                            class="avatar-sm" 
-                                            alt="Avatar de {{ $demande->user->nom ?? 'Utilisateur Inconnu' }}"> 
-                                        <div>
+                                            <img src="{{ $demande->user->image_path ?? asset('images/default-avatar.png') }}" class="avatar-sm" alt="Avatar">                                        <div>
                                             <div class="user-name">{{ $demande->user->nom  ?? 'Utilisateur Inconnu' }}</div>
                                             <small class="user-email">{{ $demande->user->email ?? 'N/A' }}</small>
                                         </div>
@@ -145,33 +156,33 @@ body { position: initial !important; overflow: auto !important; }
                                     </span>
                                 </td>
                                 
-                                {{-- 6. ACTIONS --}}
+                                {{-- 6. ACTIONS (C'EST LA QUE LE JS DE BOOTSTRAP AGIT) --}}
                                 <td data-label="Actions" class="action-buttons-flex">
                                     
                                     {{-- Détails --}}
                                     <a href="{{ route('admin.demandes.details', [
-                                        'type' => $demande->type,          
-                                        'demandeId' => $demande->id           
+                                        'type' => $demande->type,              
+                                        'demandeId' => $demande->id            
                                     ]) }}" class="btn btn-sm btn-info" title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
 
                                     @if ($statut === 'en_attente')
                                         
-                                        {{-- BOUTON VALIDER --}}
+                                        {{-- 🎯 BOUTON VALIDER : data-target doit correspondre à l'ID exact du modal inclus --}}
                                         <button type="button" 
                                             data-toggle="modal" 
                                             data-target="#modal-valider-{{ $demande->type }}-{{ $demande->id }}" 
-                                            class="btn btn-sm btn-success action-validate" 
+                                            class="btn btn-success" 
                                             title="Valider">
                                             <i class="fas fa-check"></i>
                                         </button>
                                         
-                                        {{-- BOUTON REFUSER --}}
+                                        {{-- 🎯 BOUTON REFUSER : data-target doit correspondre à l'ID exact du modal inclus --}}
                                         <button type="button" 
                                             data-toggle="modal" 
                                             data-target="#modal-refuser-{{ $demande->type }}-{{ $demande->id }}" 
-                                            class="btn btn-sm btn-danger action-reject" 
+                                            class="btn btn-danger" 
                                             title="Refuser">
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -197,68 +208,41 @@ body { position: initial !important; overflow: auto !important; }
     </div>
 </div>
 
-{{-- MODALS : Inclusion des fichiers de modal --}}
-{{-- Filtre pour n'inclure les modaux que pour les demandes 'en attente' afin d'optimiser les ressources --}}
+{{-- MODALS : Inclusion des fichiers de modal (Assurez-vous qu'ils existent et ont les bons IDs) --}}
 @foreach ($demandes->filter(function ($d) { return strtolower($d->statut) === 'en attente' || strtolower($d->statut) === 'en_attente'; }) as $demande)
     @include('admin.demandes.modals.modal-valider', ['demande' => $demande])
     @include('admin.demandes.modals.modal-refuser', ['demande' => $demande])
 @endforeach
 
-@endsection 
-
-@push('scripts')
+@endsection
+@section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const table = document.getElementById('demandeTable');
-    if (!table) return;
-
-    const tbody = table.querySelector('tbody');
-    const dynamicActionsContainer = document.getElementById('dynamic-actions-top');
-
-    let firstWaitingRow = null;
-    
-    // 1. Trouver la première demande "en attente" avec les boutons Valider/Refuser
-    tbody.querySelectorAll('tr.table-row-hover').forEach(row => {
-        const actionCell = row.cells[5]; 
+    /**
+     * Correction du Z-Index des Modals Bootstrap.
+     * Déplace l'élément du modal directement sous la balise <body> lors de son affichage.
+     */
+    $(document).ready(function() {
         
-        const validateButton = actionCell.querySelector('.action-validate');
-        const rejectButton = actionCell.querySelector('.action-reject');
-
-        if (validateButton && rejectButton && !firstWaitingRow) {
-            firstWaitingRow = row;
-        }
+        // Écoute l'événement 'show' qui est déclenché juste avant que le modal ne devienne visible
+        $('.modal').on('show.bs.modal', function() {
+            
+            // Déplace l'élément du modal pour qu'il soit un enfant direct du <body>
+            // Cela l'extrait de tout conteneur HTML susceptible de causer un conflit de z-index.
+            $(this).appendTo('body');
+        });
+        
     });
-
-    if (firstWaitingRow) {
-        // Récupérer les boutons originaux
-        const originalActionCell = firstWaitingRow.cells[5];
-        const originalValidateBtn = originalActionCell.querySelector('.action-validate');
-        const originalRejectBtn = originalActionCell.querySelector('.action-reject');
-
-        // 2. Cloner les boutons
-        const clonedValidateBtn = originalValidateBtn.cloneNode(true); 
-        const clonedRejectBtn = originalRejectBtn.cloneNode(true); 
-
-        // 3. Modifier le style et le texte des boutons clonés
-        
-        // Bouton Valider
-        clonedValidateBtn.classList.remove('btn-sm');
-        clonedValidateBtn.innerHTML = '<i class="fas fa-check"></i> Valider (1ère)';
-        clonedValidateBtn.style.padding = '8px 15px';
-
-        // Bouton Refuser
-        clonedRejectBtn.classList.remove('btn-sm');
-        clonedRejectBtn.innerHTML = '<i class="fas fa-times"></i> Refuser (1ère)';
-        clonedRejectBtn.style.padding = '8px 15px';
-        
-        // 4. Injecter les boutons clonés
-        dynamicActionsContainer.appendChild(clonedValidateBtn);
-        dynamicActionsContainer.appendChild(clonedRejectBtn);
-        
-    } else {
-        // Si aucune demande 'en attente' n'est trouvée, cacher le conteneur
-        dynamicActionsContainer.style.display = 'none';
-    }
-});
 </script>
-@endpush
+@endsection
+{{-- Dans resources/views/admin/demandes/index.blade.php, après @endsection --}}
+@section('scripts') 
+    <script src="https://kit.fontawesome.com/votre-kit-font-awesome.js"></script>
+    <script>
+        // Placez le code jQuery ci-dessus ici
+        $(document).ready(function() {
+            $('.modal').on('show.bs.modal', function() {
+                $(this).appendTo('body');
+            });
+        });
+    </script>
+@endsection
