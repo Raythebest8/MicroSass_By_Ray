@@ -318,7 +318,7 @@
                 </div>
                 <div class="detail-group">
                     <label>Motif du Prêt :</label>
-                    <p class="detail-value">{{ $demande->motif_pret ?? 'Non spécifié' }}</p>
+                    <p class="detail-value">{{ $demande->motif ?? 'Non spécifié' }}</p>
                 </div>
             </div>
 
@@ -361,25 +361,34 @@
 
                 <ul class="document-list">
 
-                    @forelse ($demande->documents as $document)
-                    <li>
-                        {{-- 1. Icône de statut --}}
-                        <i class="fas fa-check-circle text-success"></i>
+                    @foreach ($demande->documents as $document)
+                    <div class="d-flex align-items-center justify-content-between border-bottom py-2">
 
-                        {{-- 2. Nom du Document --}}
-                        {{ $document->nom_afficher ?? $document->nom_fichier }}
+                        <div>
+                            <strong>{{ $document->nom_afficher ?? 'Document' }}</strong><br>
+                            <small class="text-muted">{{ $document->mime_type }}</small>
+                        </div>
 
-                        {{-- 3. Lien de Téléchargement --}}
-                        <a href="{{ route('admin.documents.download', ['documentId' => $document->id]) }}"
-                            target="_blank"
-                            class="action-link"
-                            title="Télécharger {{ $document->nom_afficher ?? $document->nom_fichier }}">
-                            (Télécharger) <i class="fas fa-download ml-1"></i>
-                        </a>
-                    </li>
-                    @empty
-                    <p class="text-muted-small" style="padding-left: 20px;">Aucun document soumis pour cette demande.</p>
-                    @endforelse
+                        <div class="actions">
+                            {{-- Aperçu --}}
+                            <a href="{{ route('admin.documents.preview', $document->id) }}"
+                                target="_blank"
+                                class="text-primary me-3"
+                                title="Voir le document">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+
+                            {{-- Télécharger --}}
+                            <a href="{{ route('admin.documents.download', $document->id) }}"
+                                class="text-success"
+                                title="Télécharger">
+                                <i class="fas fa-download"></i> Télécharger
+                            </a>
+                        </div>
+
+                    </div>
+                    @endforeach
+
 
                 </ul>
             </div>
@@ -387,7 +396,7 @@
         </div>
 
         {{-- Pied de page - Actions --}}
-        <div class="card-footer-actions">
+        <div class="card-footer-actions " style="background-color: #81828567;">
             @if (strtolower(str_replace(' ', '_', $demande->statut)) === 'en_attente')
 
             <p class="action-text">Actions disponibles :</p>

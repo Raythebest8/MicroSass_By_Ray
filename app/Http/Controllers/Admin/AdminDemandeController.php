@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Pagination\LengthAwarePaginator; // Classe de pagination manuelle
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserCredentials;
+
 
 class AdminDemandeController extends Controller
 {
@@ -136,7 +139,7 @@ class AdminDemandeController extends Controller
         try {
             // 5. Mise à jour des données et du statut
             $demande->update([
-                'statut' => 'validée',
+                'statut' => 'VALIDEE',
                 'admin_id' => Auth::id(),
                 'date_traitement' => now(),
                 'taux_interet' => $tauxAnnuel,

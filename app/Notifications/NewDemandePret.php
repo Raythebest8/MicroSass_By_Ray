@@ -30,7 +30,7 @@ class NewDemandePret extends Notification implements ShouldQueue
     public function toSlack(object $notifiable): SlackMessage
     {
         $adminUrl = url("/admin/demandes/{$this->demande->id}/details?type={$this->demandeType}");
-        $clientName = $this->demande->user?->name ?? 'Utilisateur Inconnu';
+        $clientName = $this->demande->user?->nom ?? 'Utilisateur Inconnu';
         $montant = $this->demande->montant_souhaite ?? 0;
         $duree = $this->demande->duree_mois ?? 0;
 

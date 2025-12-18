@@ -32,15 +32,6 @@
 
 <x-footer />
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RMR1I5W2TOWUv+IqD0sQ4nFznhlT2w65XW/f0G5w4cM6bC9g0mF" crossorigin="anonymous"></script>
-
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTC0wYlKqVnIqP6f5xG5l/zF0G5g5jT5s6k5t3t0aB5i1g0p4f" crossorigin="anonymous"></script>
-
-<script src="{{ asset('assets/js/dashboard.js') }}"></script>
-{{-- Dans layouts/app.blade.php (fin du <body>) --}}
-
 {{-- 🚨 AJOUT 2 : JQUERY (Doit rester le premier) --}}
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
@@ -52,7 +43,6 @@
 
 {{-- Votre JS Personnalisé --}}
 <script src="{{ asset('assets/js/dashboard.js') }}"></script>
-
 
 
 

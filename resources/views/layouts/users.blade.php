@@ -94,7 +94,7 @@
 
     <!-- Mobile Header -->
     <div class="md:hidden fixed top-0 w-full bg-white border-b border-gray-200 z-20 flex items-center justify-between p-4 shadow-sm">
-        <h1 class="text-xl font-bold text-indigo-700">MicroSaaS</h1>
+        <h1 class="text-xl font-bold text-indigo-700">Procredi</h1>
         <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-indigo-700 focus:outline-none">
             <span class="text-2xl">☰</span>
         </button>
@@ -125,7 +125,7 @@
             <div class="pt-4 md:pt-4 pb-4 flex justify-between items-center">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Tableau de Bord</h2>
-                    <p class="text-gray-500 mt-1 dark:text-gray-400">Bienvenue, <span id="welcome-name">Raymond</span> ! Voici votre situation financière.</p>
+                    <p class="text-gray-500 mt-1 dark:text-gray-400">Bienvenue, <span id="welcome-name">{{ Auth::user()->prenom }}</span> ! Voici votre situation financière.</p>
                 </div>
 
                 <div class="device-theme-toggle flex items-center">

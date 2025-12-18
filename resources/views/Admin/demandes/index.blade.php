@@ -1,11 +1,10 @@
-@extends('layouts.app') 
+@extends('layouts.app')
 
 @section('content')
 
 <style>
-/* --- VOS STYLES CSS CONSERVÉS --- */
 :root {
-    --primary-color: #007bff; /* Bleu principal */
+    --primary-color: #007bff;
     --success-color: #28a745;
     --danger-color: #dc3545;
     --warning-color: #ffc107;
@@ -15,9 +14,10 @@
     --bg-light: #f8f9fc;
 }
 
+/* --- Container et Card --- */
 .container { width: 95%; max-width: 1300px; margin: 0 auto; padding: 20px 0; }
 .page-title { color: var(--primary-color); font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; }
-.card-admin { background: white; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); margin-bottom: 30px; }
+.card-admin { background: white; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem rgba(58,59,69,0.15); margin-bottom: 30px; }
 .card-header-flex { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
 .search-area { display: flex; align-items: center; width: 400px; }
 .icon-muted { color: var(--muted-color); margin-right: 10px; }
@@ -31,64 +31,55 @@
 .data-table th, .data-table td { padding: 12px 15px; text-align: left; vertical-align: middle; }
 .data-table tbody tr:nth-child(even) { background-color: #f3f3f3; }
 .table-row-hover:hover { background-color: #e9ecef; }
-/* --- ATTENTION : J'ai retiré ici les styles 'header-sort' inutiles pour votre demande --- */
+
+/* --- User Info --- */
 .user-info-flex { display: flex; align-items: center; }
 .avatar-sm { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1px solid var(--border-color); }
 .user-name { font-weight: bold; }
 .user-email { color: var(--muted-color); font-size: 12px; }
+
+/* --- Badge Status / Type --- */
 .amount-value { font-weight: bold; color: var(--success-color); }
 .badge-status { display: inline-block; padding: 5px 10px; border-radius: 50px; font-size: 12px; font-weight: bold; text-transform: uppercase; text-align: center; }
 .badge-type { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; background-color: #eee; color: var(--text-color); }
 .badge-en_attente { background-color: var(--warning-color); color: #333; }
 .badge-validee { background-color: var(--success-color); color: white; }
 .badge-rejetee { background-color: var(--danger-color); color: white; }
+
+/* --- Buttons --- */
 .action-buttons-flex { display: flex; gap: 5px; }
 .btn { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1; text-decoration: none; transition: background-color 0.2s; }
 .btn-info { background-color: var(--primary-color); color: white; }
 .btn-success { background-color: var(--success-color); color: white; }
 .btn-danger { background-color: var(--danger-color); color: white; }
+
+/* --- Card Footer Pagination --- */
 .card-footer-center { padding: 15px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center; }
 .text-center-empty { text-align: center; padding: 40px; color: var(--muted-color); }
 .text-center-empty i { color: #ccc; margin-bottom: 10px; }
-/* --- AJOUTEZ CECI DANS VOTRE BLOC <style> DANS index.blade.php --- */
-/* resources/views/index.blade.php (dans la balise <style>) */
 
-/* * Force les éléments du modal à être au-dessus 
- * de tous les autres éléments de la page (comme votre sidebar ou header)
- */
-.modal-backdrop {
-    /* Normalement 1040 */
-    z-index: 10400 !important;
-}
+/* --- MODAL FIXES --- */
+.modal-backdrop { z-index: 1050 !important; }
+.modal { z-index: 1060 !important; }
+.modal .modal-content { position: relative; z-index: 1061; }
+body.modal-open { overflow: auto !important; }
 
-.modal {
-    /* Normalement 1050 (doit être supérieur au backdrop) */
-    z-index: 10500 !important;
+@media (max-width: 768px) {
+    .card-header-flex { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .search-area { width: 100%; margin-bottom: 10px; }
+    .filters-area { flex-wrap: wrap; }
 }
-body {
-    position: initial !important; 
-    overflow: auto !important; 
-}
-
-.modal-open {
-    /* Assurez-vous que l'overflow n'est pas caché lorsque le modal est ouvert */
-    overflow: auto !important; 
-}
-@media (max-width: 768px) { /* ... styles responsive ... */ }
 </style>
 
 <div class="container">
     <h2 class="page-title">Gestion des Demandes de Prêt</h2>
-    
+
     <div class="card-admin">
-        
         <div class="card-header-flex">
-            
             <div class="search-area">
                 <i class="fas fa-search icon-muted"></i>
                 <input type="text" class="input-search" placeholder="Rechercher...">
             </div>
-            
             <div class="filters-area">
                 <select class="select-filter">
                     <option selected>Tous les status</option>
@@ -103,7 +94,7 @@ body {
                 </select>
             </div>
         </div>
-        
+
         <div class="card-body-table">
             <div class="table-responsive-wrapper">
                 <table class="data-table" id="demandeTable">
@@ -124,68 +115,24 @@ body {
                                 $statusLabel = str_replace('_', ' ', $demande->statut);
                             @endphp
                             <tr class="table-row-hover">
-                                {{-- 1. NOM --}}
                                 <td data-label="Nom">
                                     <div class="user-info-flex">
-                                            <img src="{{ $demande->user->image_path ?? asset('images/default-avatar.png') }}" class="avatar-sm" alt="Avatar">                                        <div>
+                                        <img src="{{ asset('storage/' . ($demande->user->image_path ?? 'default/default-photo.png')) }}" class="avatar-sm" alt="Avatar">
+                                        <div>
                                             <div class="user-name">{{ $demande->user->nom  ?? 'Utilisateur Inconnu' }}</div>
                                             <small class="user-email">{{ $demande->user->email ?? 'N/A' }}</small>
                                         </div>
                                     </div>
                                 </td>
-                                
-                                {{-- 2. TYPE --}}
-                                <td data-label="Type">
-                                   <span class="badge-type">{{ ucfirst($demande->type) }}</span>
-                                </td>
-                                
-                                {{-- 3. DATE SOUMISSION --}}
-                                <td data-label="Date">
-                                    {{ $demande->created_at->isoFormat('ddd D MMM, HH:mm') }}
-                                </td>
-                                
-                                {{-- 4. MONTANT --}}
-                                <td data-label="Montant" class="amount-value">
-                                    {{ number_format($demande->montant_souhaite ?? 0, 0, ',', ' ') }} FCFA
-                                </td>
-                                
-                                {{-- 5. STATUS --}}
-                                <td data-label="Statut">
-                                    <span class="badge-status badge-{{ $statut }}">
-                                        {{ $statusLabel }}
-                                    </span>
-                                </td>
-                                
-                                {{-- 6. ACTIONS (C'EST LA QUE LE JS DE BOOTSTRAP AGIT) --}}
+                                <td data-label="Type"><span class="badge-type">{{ ucfirst($demande->type) }}</span></td>
+                                <td data-label="Date">{{ $demande->created_at->isoFormat('ddd D MMM, HH:mm') }}</td>
+                                <td data-label="Montant" class="amount-value">{{ number_format($demande->montant_souhaite ?? 0, 0, ',', ' ') }} FCFA</td>
+                                <td data-label="Statut"><span class="badge-status badge-{{ $statut }}">{{ $statusLabel }}</span></td>
                                 <td data-label="Actions" class="action-buttons-flex">
-                                    
-                                    {{-- Détails --}}
-                                    <a href="{{ route('admin.demandes.details', [
-                                        'type' => $demande->type,              
-                                        'demandeId' => $demande->id            
-                                    ]) }}" class="btn btn-sm btn-info" title="Voir les détails">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-
+                                    <a href="{{ route('admin.demandes.details', ['type'=>$demande->type,'demandeId'=>$demande->id]) }}" class="btn btn-info" title="Voir les détails"><i class="fas fa-eye"></i></a>
                                     @if ($statut === 'en_attente')
-                                        
-                                        {{-- 🎯 BOUTON VALIDER : data-target doit correspondre à l'ID exact du modal inclus --}}
-                                        <button type="button" 
-                                            data-toggle="modal" 
-                                            data-target="#modal-valider-{{ $demande->type }}-{{ $demande->id }}" 
-                                            class="btn btn-success" 
-                                            title="Valider">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        
-                                        {{-- 🎯 BOUTON REFUSER : data-target doit correspondre à l'ID exact du modal inclus --}}
-                                        <button type="button" 
-                                            data-toggle="modal" 
-                                            data-target="#modal-refuser-{{ $demande->type }}-{{ $demande->id }}" 
-                                            class="btn btn-danger" 
-                                            title="Refuser">
-                                            <i class="fas fa-times"></i>
-                                        </button>
+                                        <button type="button" data-toggle="modal" data-target="#modal-valider-{{ $demande->type }}-{{ $demande->id }}" class="btn btn-success" title="Valider"><i class="fas fa-check"></i></button>
+                                        <button type="button" data-toggle="modal" data-target="#modal-refuser-{{ $demande->type }}-{{ $demande->id }}" class="btn btn-danger" title="Refuser"><i class="fas fa-times"></i></button>
                                     @endif
                                 </td>
                             </tr>
@@ -208,41 +155,24 @@ body {
     </div>
 </div>
 
-{{-- MODALS : Inclusion des fichiers de modal (Assurez-vous qu'ils existent et ont les bons IDs) --}}
-@foreach ($demandes->filter(function ($d) { return strtolower($d->statut) === 'en attente' || strtolower($d->statut) === 'en_attente'; }) as $demande)
-    @include('admin.demandes.modals.modal-valider', ['demande' => $demande])
-    @include('admin.demandes.modals.modal-refuser', ['demande' => $demande])
+{{-- Inclusion modals --}}
+@foreach ($demandes->filter(fn($d)=>in_array(strtolower($d->statut), ['en attente','en_attente'])) as $demande)
+    @include('admin.demandes.modals.modal-valider',['demande'=>$demande])
+    @include('admin.demandes.modals.modal-refuser',['demande'=>$demande])
 @endforeach
 
-@endsection
-@section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    /**
-     * Correction du Z-Index des Modals Bootstrap.
-     * Déplace l'élément du modal directement sous la balise <body> lors de son affichage.
-     */
-    $(document).ready(function() {
-        
-        // Écoute l'événement 'show' qui est déclenché juste avant que le modal ne devienne visible
-        $('.modal').on('show.bs.modal', function() {
-            
-            // Déplace l'élément du modal pour qu'il soit un enfant direct du <body>
-            // Cela l'extrait de tout conteneur HTML susceptible de causer un conflit de z-index.
-            $(this).appendTo('body');
-        });
-        
+$(document).ready(function() {
+    // Déplace le modal dans le body pour corriger le z-index et le scroll
+    $('.modal').on('show.bs.modal', function() {
+        $(this).appendTo('body');
     });
+    $('.modal').on('shown.bs.modal', function() {
+        $('.modal-backdrop').appendTo('body');
+    });
+});
 </script>
-@endsection
-{{-- Dans resources/views/admin/demandes/index.blade.php, après @endsection --}}
-@section('scripts') 
-    <script src="https://kit.fontawesome.com/votre-kit-font-awesome.js"></script>
-    <script>
-        // Placez le code jQuery ci-dessus ici
-        $(document).ready(function() {
-            $('.modal').on('show.bs.modal', function() {
-                $(this).appendTo('body');
-            });
-        });
-    </script>
+
 @endsection

@@ -16,6 +16,10 @@ use App\Http\Controllers\Admin\AdminGestionUsersController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\User\ProfileController;
 
+    use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserCredentials;
+use App\Models\User;
+
 Route::get('/', function () {
     return view('Auth/register');
 });
@@ -40,30 +44,44 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/process', [PaiementController::class, 'process'])->name('process');
     Route::get('/paiements/retards', [App\Http\Controllers\Admin\AdminPretController::class, 'latePaymentsIndex'])->name('paiements.retards');
 
-    Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+    // Route pour une seule notification (utilisée par les liens bleus)
+    Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+
+    // Route pour TOUT marquer comme lu (utilisée par le bouton vert)
+    Route::post('/notifications/mark-all', function () {
+        Auth::user()->unreadNotifications->markAsRead();
+        return back()->with('success', 'Toutes les notifications ont été lues.');
+    })->name('admin.notifications.markAllAsRead');
 
     Route::get('/demandes', [AdminDemandeController::class, 'index'])->name('admin.demandes.index');
-    
+
     // compte utilisateur
     Route::get('/compte_client', [AdminGestionUsersController::class, 'index'])->name('admin.compte_client.index');
     Route::get('/compte_client/create', [AdminGestionUsersController::class, 'create'])->name('admin.compte_client.create');
 
     Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('users', AdminGestionUsersController::class);
-});
+        Route::resource('users', AdminGestionUsersController::class);
+    });
 
     // Route pour afficher les détails d'une demande
     Route::get('/documents/{documentId}/download', [AdminDocumentController::class, 'download'])
         ->name('admin.documents.download');
+    Route::get( '/admin/documents/{document}/preview', [AdminDocumentController::class, 'preview']
+    )->name('admin.documents.preview');
 
 
-        Route::post('demandes/{type}/{demandeId}/approuver', [AdminDemandeController::class, 'approuverDemande'])->name('admin.demandes.approuver');
-        Route::post('demandes/{type}/{demandeId}/rejeter', [AdminDemandeController::class, 'rejeterDemande'])->name('admin.demandes.rejeter');
 
-        // Route de détails (show)
-        Route::get('demandes/{type}/{demandeId}/details', [AdminDemandeController::class, 'show'])->name('admin.demandes.details');
-    });
+
+
+
+
+    Route::post('demandes/{type}/{demandeId}/approuver', [AdminDemandeController::class, 'approuverDemande'])->name('admin.demandes.approuver');
+    Route::post('demandes/{type}/{demandeId}/rejeter', [AdminDemandeController::class, 'rejeterDemande'])->name('admin.demandes.rejeter');
+
+    // Route de détails (show)
+    Route::get('demandes/{type}/{demandeId}/details', [AdminDemandeController::class, 'show'])->name('admin.demandes.details');
+});
 
 
 // routes/web.php

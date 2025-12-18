@@ -21,7 +21,7 @@
                 <div class="modal-body">
                     <p class="mb-4">
                         Vous êtes sur le point d'**approuver** la demande de prêt de 
-                        <span class="font-weight-bold text-primary">{{ $demande->user->name ?? 'Utilisateur Inconnu' }}</span>. 
+                        <span class="font-weight-bold text-primary">{{ $demande->user->nom ?? 'Utilisateur Inconnu' }}</span>. 
                         Veuillez renseigner les termes du prêt accordé.
                     </p>
                     

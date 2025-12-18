@@ -21,7 +21,7 @@
                 <div class="modal-body">
                     <p class="mb-4">
                         Êtes-vous sûr de vouloir **rejeter** définitivement la demande de prêt de 
-                        <span class="font-weight-bold text-danger">{{ $demande->user->name ?? 'Utilisateur Inconnu' }}</span> ?
+                        <span class="font-weight-bold text-danger">{{ $demande->user->nom ?? 'Utilisateur Inconnu' }}</span> ?
                     </p>
                     <div class="form-group mt-3">
                         <label for="raison-rejeter-{{ $demande->type }}-{{ $demande->id }}">Raison du rejet (Obligatoire) :</label>
