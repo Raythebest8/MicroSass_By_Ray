@@ -24,15 +24,18 @@
                         <span class="font-weight-bold text-danger">{{ $demande->user->nom ?? 'Utilisateur Inconnu' }}</span> ?
                     </p>
                     <div class="form-group mt-3">
+                        @error('raison_rejet')
+        <div class="alert alert-danger py-1 px-2 small">{{ $message }}</div>
+    @enderror
                         <label for="raison-rejeter-{{ $demande->type }}-{{ $demande->id }}">Raison du rejet (Obligatoire) :</label>
                         <textarea 
                             name="raison_rejet" 
                             id="raison-rejeter-{{ $demande->type }}-{{ $demande->id }}" 
                             class="form-control" 
-                            rows="3" 
+                            rows="4" 
                             placeholder="Veuillez fournir un motif clair pour informer l'utilisateur."
                             required
-                        ></textarea>
+                        >{{ old('raison_rejet') }}</textarea>
                     </div>
                 </div>
                 

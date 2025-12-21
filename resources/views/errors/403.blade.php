@@ -52,7 +52,7 @@
         <h1>403</h1>
         <p>Accès Refusé</p>
         <p>Vous n'avez pas la permission d'accéder à cette ressource.</p>
-        <a href="{{ route('dashboard') }}">Retour à l'accueil</a>
+        <a href="">Retour à l'accueil</a>
     </div>
 </body>
 </html>

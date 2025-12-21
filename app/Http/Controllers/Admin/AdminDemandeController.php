@@ -125,7 +125,7 @@ class AdminDemandeController extends Controller
 
         // 4. Validation des données d'approbation (du formulaire modal)
         $request->validate([
-            'taux_interet' => 'required|numeric|min:0.01|max:1',
+            'taux_interet' => 'required|numeric|min:0.01|max:100',
             'duree_mois' => 'required|integer|min:1',
             'montant_accorde' => 'required|numeric|min:1000',
             'commentaire_approbation' => 'nullable|string|max:500', // Ajouté pour le champ optionnel
@@ -139,7 +139,7 @@ class AdminDemandeController extends Controller
         try {
             // 5. Mise à jour des données et du statut
             $demande->update([
-                'statut' => 'VALIDEE',
+                'statut' => 'validée',
                 'admin_id' => Auth::id(),
                 'date_traitement' => now(),
                 'taux_interet' => $tauxAnnuel,
@@ -164,7 +164,7 @@ class AdminDemandeController extends Controller
         } catch (\Exception $e) {
             Log::error("Erreur d'approbation demande #{$demande->id} (Type: {$type}): " . $e->getMessage());
             return back()->with('error', 'Erreur lors de l\'approbation ou de la génération de l\'échéancier.');
-        }
+        }  
     }
 
     /**
@@ -172,64 +172,44 @@ class AdminDemandeController extends Controller
      * @param Demande $demande - Route Model Binding
      */
 
-    public function rejeterDemande(Request $request, string $type, int $demandeId)
-    {
-        // 1. Détermination du Modèle
-        if ($type === 'entreprise') {
-            $model = Entreprise::class;
-        } elseif ($type === 'particulier') {
-            $model = Particulier::class;
-        } else {
-            return back()->with('error', 'Type de demande invalide pour le rejet.');
-        }
+ public function rejeterDemande(Request $request, string $type, int $demandeId)
+{
+    // 1. Validation (on met min:1 pour être sûr que ça ne bloque pas)
+    $request->validate([
+        'raison_rejet' => 'required|string|min:1',
+    ]);
 
-        // Charger la demande (Particulier ou Entreprise)
-        $demande = $model::with('user')->findOrFail($demandeId);
+    // 2. Détermination du modèle
+    $model = ($type === 'entreprise') ? Entreprise::class : Particulier::class;
+    $demande = $model::findOrFail($demandeId);
 
-        // Reste de votre code (Inchangé)
-
-        // 2. Vérification des permissions
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Accès non autorisé.');
-        }
-
-        // 3. Validation du champ de commentaire de rejet 
-        $request->validate([
-            'raison_rejet' => 'required|string|max:500', // Changé à 'required' car votre modal l'exige
+    try {
+        // 3. Mise à jour
+        $success = $demande->update([
+            'statut' => 'rejetée',
+            'admin_id' => Auth::id(),
+            'date_traitement' => now(),
+            'raison_rejet' => $request->raison_rejet,
         ]);
 
-        // 4. Vérification du statut actuel
-        $currentStatus = strtolower($demande->statut);
-        if ($currentStatus !== 'en attente' && $currentStatus !== 'en cours d\'examen') {
-            return back()->with('error', 'Le statut actuel de la demande ne permet pas cette action.');
-        }
-
+        // 4. Notification (on l'entoure d'un try-catch pour qu'elle ne bloque pas le rejet)
         try {
-            // 5. Mise à jour du statut et enregistrement de la raison du rejet
-            $demande->update([
-                'statut' => 'rejetée',
-                'admin_id' => Auth::id(),
-                'date_traitement' => now(),
-                'raison_rejet' => $request->raison_rejet,
-                // On s'assure que les colonnes d'approbation sont nulles
-                'taux_interet' => null,
-                'duree_mois' => null,
-                'montant_accorde' => null,
-            ]);
-
-            // 6. Notification à l'utilisateur (rejetée)
             if ($demande->user) {
                 $demande->user->notify(new DemandeStatusUpdated($demande, 'rejetée', $type));
             }
-
-            // 7. Redirection
-            return Redirect::route('admin.demandes.index')
-                ->with('warning', 'La demande N° ' . $demande->id . ' a été rejetée et l\'utilisateur notifié.');
         } catch (\Exception $e) {
-            Log::error("Erreur de rejet demande #{$demande->id} (Type: {$type}): " . $e->getMessage());
-            return back()->with('error', 'Erreur lors du rejet de la demande. Veuillez consulter les logs.');
+            Log::warning("Notification échec : " . $e->getMessage());
         }
+
+        return Redirect::route('admin.demandes.index')
+            ->with('warning', 'La demande N° ' . $demande->id . ' a été rejetée.');
+
+    } catch (\Exception $e) {
+        // En cas d'erreur SQL (par exemple si la colonne n'existe pas)
+        Log::error("Erreur SQL rejet : " . $e->getMessage());
+        return back()->with('error', 'Erreur technique : ' . $e->getMessage());
     }
+}
     /**
      * Affiche les détails d'une demande de prêt spécifique (Particulier ou Entreprise).
      * * @param string $type ('particulier' ou 'entreprise')

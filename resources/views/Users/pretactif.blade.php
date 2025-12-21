@@ -27,44 +27,51 @@
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach ($demandes as $demande)
                         @php
-                            // Identifie si c'est Entreprise ou Particulier
                             $type = strtolower(class_basename($demande));
-                            $status = $demande->statut;
+                            $status = strtolower($demande->statut); // Conversion en minuscule pour la comparaison
                             
-                            $statusClass = [
-                                'validée' => 'bg-green-100 text-green-700',
-                                'approuvé' => 'bg-green-100 text-green-700',
-                                'en attente' => 'bg-yellow-100 text-yellow-800',
-                                'en cours d\'examen' => 'bg-blue-100 text-blue-800',
-                                'rejetée' => 'bg-red-100 text-red-800',
-                            ][$status] ?? 'bg-gray-100 text-gray-600';
+                            $statusStyles = [
+                                'validée' => 'bg-green-100 text-green-700 border-green-200',
+                                'approuvé' => 'bg-green-100 text-green-700 border-green-200',
+                                'en attente' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                                'en cours d\'examen' => 'bg-blue-100 text-blue-800 border-blue-200',
+                                'rejetée' => 'bg-red-100 text-red-800 border-red-200',
+                            ];
+                            $currentStyle = $statusStyles[$status] ?? 'bg-gray-100 text-gray-600 border-gray-200';
                         @endphp
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                {{ ucfirst($type) }} (N° {{ $demande->id }})
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
+                                <span class="text-indigo-600 dark:text-indigo-400">{{ $demande->id }}</span> {{ ucfirst($type) }}
                             </td>
                             <td class="px-6 py-4 max-w-xs truncate text-sm text-gray-600 dark:text-gray-300">
                                 {{ \Illuminate\Support\Str::limit($demande->motif, 40) }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                                {{ number_format($demande->montant_souhaite, 0, ',', ' ') }} FCFA
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 dark:text-gray-200">
+                                {{ number_format($demande->montant_souhaite, 0, ',', ' ') }} <small>FCFA</small>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {{ $demande->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 text-xs font-bold rounded-full {{ $statusClass }} dark:bg-opacity-20">
+                                <span class="px-3 py-1 text-xs font-bold rounded-full border {{ $currentStyle }} dark:bg-opacity-10">
                                     {{ ucfirst($status) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 @if(in_array($status, ['validée', 'approuvé']))
                                     <a href="{{ route('users.demande.details', ['type' => $type, 'id' => $demande->id]) }}" 
-                                       class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-bold">
-                                        Voir Échéancier
+                                       class="inline-flex items-center text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 font-bold underline">
+                                        Voir l'échéancier
                                     </a>
+                                @elseif($status == 'rejetée')
+                                    <button 
+                                        onclick="showRejectionReason('{{ addslashes($demande->raison_rejet ?? '??') }}');"  
+                                        class="inline-flex items-center text-red-600 hover:text-red-800 dark:text-red-400 font-bold">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Voir le Motif
+                                    </button>
                                 @else
-                                    <span class="text-gray-400 dark:text-gray-500">En attente</span>
+                                    <span class="text-gray-400 italic">En cours...</span>
                                 @endif
                             </td>
                         </tr>
@@ -74,4 +81,11 @@
         </div>
     @endif
 </div>
+
+<script>
+    function showRejectionReason(reason) {
+        // Vous pouvez remplacer ceci par un modal SweetAlert2 pour un look plus pro
+        alert("Motif du rejet :\n\n" + reason);
+    }
+</script>
 @endsection

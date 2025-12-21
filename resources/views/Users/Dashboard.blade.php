@@ -7,14 +7,14 @@
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-indigo-500 flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">Total Emprunté</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-total">150 000 Fcfa</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-total">{{$totalDemandes}}</p>
                     </div>
                     <div class="bg-indigo-50 dark:bg-indigo-900 p-3 rounded-full text-indigo-600 dark:text-indigo-400 text-xl">💰</div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-emerald-500 flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">Remboursé</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-paid">28 450 Fcfa</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white" id="stat-paid">0</p>
                     </div>
                     <div class="bg-emerald-50 dark:bg-emerald-900 p-3 rounded-full text-emerald-600 dark:text-emerald-400 text-xl">✅</div>
                 </div>
@@ -22,7 +22,7 @@
                     <div>
                         <p class="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">Prochaine Échéance</p>
                         <p class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">15 Oct</p>
-                        <p class="text-xs text-amber-600 font-medium dark:text-amber-400">8320 Fcfa </p>
+                        <p class="text-xs text-amber-600 font-medium dark:text-amber-400">0</p>
                     </div>
                     <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-full text-amber-600 dark:text-amber-400 text-xl">📅</div>
                 </div>

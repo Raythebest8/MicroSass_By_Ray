@@ -78,6 +78,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('demandes/{type}/{demandeId}/approuver', [AdminDemandeController::class, 'approuverDemande'])->name('admin.demandes.approuver');
     Route::post('demandes/{type}/{demandeId}/rejeter', [AdminDemandeController::class, 'rejeterDemande'])->name('admin.demandes.rejeter');
+   
 
     // Route de détails (show)
     Route::get('demandes/{type}/{demandeId}/details', [AdminDemandeController::class, 'show'])->name('admin.demandes.details');
@@ -118,6 +119,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
         Route::get('/demande/entreprise', [App\Http\Controllers\User\EntrepriseController::class, 'formEntreprise'])->name('demande.entreprise');
         Route::post('/demande/entreprise', [App\Http\Controllers\User\EntrepriseController::class, 'submitEntreprise'])->name('demande.submitEntreprise');
+        // Détails d'une demande spécifique
 
         // Pages liées aux prêts
         Route::get('/pretactif', [App\Http\Controllers\User\DemandePretController::class, 'historique'])->name('pretactif');
@@ -129,4 +131,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         Route::get('/conditions-generales', 'conditionsGenerales')->name('conditionsGenerales');
         Route::get('/analytics', 'analytics')->name('analytics');
     });
+    Route::get('/demande/{type}/{id}/details', [DemandePretController::class, 'details'])
+    ->name('users.demande.details');
+    Route::get('/demande/{type}/{id}/download', [App\Http\Controllers\User\DemandePretController::class, 'downloadPDF'])
+    ->name('users.demande.download');
 });

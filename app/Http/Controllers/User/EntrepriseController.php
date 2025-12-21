@@ -92,6 +92,7 @@ class EntrepriseController extends Controller
                         'statut' => 'en attente',
                         'admin_id' => null,
                         'date_traitement' => null,
+
                     ]
                 );
 

@@ -44,10 +44,14 @@ class Entreprise extends Model
         'rib_entreprise',
         
         // Champs de Traitement et Clé Étrangère
-        'user_id',
-        'statut',
-        'admin_id',
-        'date_traitement',
+        'statut', 
+         'raison_rejet',
+    'admin_id', 
+    'date_traitement', 
+    'taux_interet', 
+    'duree_mois', 
+    'commentaire_approbation',
+   
     ];
 
     /**
@@ -58,6 +62,7 @@ class Entreprise extends Model
         'releves_bancaires' => 'array', // Conversion Array <-> JSON pour la colonne TEXT
         'date_traitement'   => 'datetime',
         'date_creation'     => 'integer',
+        'raison_rejet'      => 'string',
         
        
     ];

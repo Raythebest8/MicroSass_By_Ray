@@ -8,24 +8,31 @@ use Carbon\Carbon;
 class AmortizationService
 {
     /**
-     * Génère et enregistre le tableau d'amortissement (échéances) pour une demande de prêt validée.
+     * Génère et enregistre le tableau d'amortissement.
      *
-     * @param Model $demande La demande de prêt (Entreprise ou Particulier)
-     * @param float $tauxAnnuel Le taux d'intérêt annuel (ex: 0.10 pour 10%)
-     * @param Carbon $dateDebut La date du premier paiement (souvent le mois prochain)
+     * @param Model $demande
+     * @param float $tauxAnnuel
+     * @param Carbon|string $dateDebut  <-- On accepte les deux types ici
      * @return void
      */
-    public function generate(Model $demande, float $tauxAnnuel, Carbon $dateDebut): void
+    public function generate(Model $demande, float $tauxAnnuel, $dateDebut): void
     {
+        // CORRECTION : Convertit en objet Carbon si c'est une chaîne de caractères
+        if (!$dateDebut instanceof Carbon) {
+            $dateDebut = Carbon::parse($dateDebut);
+        }
+
+        // On divise le taux annuel par 100 si l'admin a saisi "23" pour 23%
+        $tauxReelAnnuel = $tauxAnnuel > 1 ? ($tauxAnnuel / 100) : $tauxAnnuel;
+
         $montantEmprunte = $demande->montant_souhaite;
         $dureeMois = $demande->duree_mois;
         
         // Calcul du taux mensuel
-        $tauxMensuel = $tauxAnnuel / 12;
+        $tauxMensuel = $tauxReelAnnuel / 12;
 
-        // Formule pour calculer l'annuité (paiement mensuel constant A)
-        // A = P * [ i * (1 + i)^n ] / [ (1 + i)^n - 1 ]
-        // P = Montant Emprunté, i = Taux Mensuel, n = Durée en Mois
+        // Formule de l'annuité constante (Formule bancaire standard)
+        // 
         if ($tauxMensuel > 0) {
             $annuite = $montantEmprunte * (
                 $tauxMensuel * pow((1 + $tauxMensuel), $dureeMois)
@@ -33,36 +40,27 @@ class AmortizationService
                 pow((1 + $tauxMensuel), $dureeMois) - 1
             );
         } else {
-            // Prêt sans intérêt (cas rare, paiement principal divisé par la durée)
             $annuite = $montantEmprunte / $dureeMois; 
         }
 
-        // Arrondir l'annuité à la valeur supérieure pour éviter les décimales complexes
         $annuite = ceil($annuite); 
         $capitalRestant = $montantEmprunte;
         $datePaiement = $dateDebut->copy();
 
-        // S'assurer que les anciennes échéances sont supprimées si le prêt est recalculé
+        // Nettoyage des anciennes échéances
         $demande->echeances()->delete();
 
-        // Génération du tableau
         for ($i = 1; $i <= $dureeMois; $i++) {
-            
             $interetDu = $capitalRestant * $tauxMensuel;
-            
-            // Le principal est l'annuité moins l'intérêt
             $principalRembourse = $annuite - $interetDu;
 
-            // Ajustement pour le dernier mois
             if ($i == $dureeMois) {
-                // S'assurer que le principal couvre exactement le reste du capital
                 $principalRembourse = $capitalRestant;
                 $annuite = $principalRembourse + $interetDu;
             }
 
             $capitalRestant -= $principalRembourse;
 
-            // Création de l'enregistrement de l'échéance
             $demande->echeances()->create([
                 'mois_numero'       => $i,
                 'date_prevue'       => $datePaiement,
@@ -72,7 +70,6 @@ class AmortizationService
                 'statut'            => 'à payer',
             ]);
 
-            // Passer au mois suivant pour la date de paiement
             $datePaiement->addMonthNoOverflow();
         }
     }

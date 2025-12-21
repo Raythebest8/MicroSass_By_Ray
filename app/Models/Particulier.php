@@ -40,9 +40,13 @@ class Particulier extends Model
         
         // --- Liens et Statut (Clés pour le système) ---
         'user_id',            // Clé étrangère pour l'utilisateur qui soumet
-        'statut',             // 'en attente', 'validée', 'rejetée'
+        'statut',     // 'en attente', 'validée', 'rejetée'
+        'raison_rejet',        
         'admin_id',           // Clé étrangère pour l'administrateur qui traite
         'date_traitement',    // Date de la décision
+        'taux_interet', 
+    'commentaire_approbation',
+    
     ];
     
     // --- RELATIONS ELOQUENT (CARDINALITÉ) ---

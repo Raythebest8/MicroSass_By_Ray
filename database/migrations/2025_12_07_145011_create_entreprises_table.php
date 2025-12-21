@@ -53,6 +53,10 @@ return new class extends Migration
             $table->string('statut')->default('en attente'); 
             $table->foreignId('admin_id')->nullable()->constrained('users');
             $table->timestamp('date_traitement')->nullable();
+            $table->decimal('taux_interet', 5, 2)->nullable();
+            $table->unsignedBigInteger('montant_accorde')->nullable();
+            $table->text('commentaire_approbation')->nullable();
+            $table->text('raison_rejet')->nullable();
 
             $table->timestamps();
         });
