@@ -54,7 +54,7 @@ return new class extends Migration
             $table->foreignId('admin_id')->nullable()->constrained('users');
             $table->timestamp('date_traitement')->nullable();
             $table->decimal('taux_interet', 5, 2)->nullable();
-            $table->unsignedBigInteger('montant_accorde')->nullable();
+            $table->decimal('montant_accorde', 15, 2)->nullable();
             $table->text('commentaire_approbation')->nullable();
             $table->text('raison_rejet')->nullable();
 

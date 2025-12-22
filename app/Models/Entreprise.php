@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Document;
-use App\Models\User; 
+use App\Models\User;
 
 
 class Entreprise extends Model
 {
-    use HasFactory; 
-        protected $appends = ['type'];
+    use HasFactory;
+    protected $appends = ['type'];
 
 
     protected $fillable = [
@@ -35,23 +35,24 @@ class Entreprise extends Model
         'motif',
         'garanties_proposees',
         'apport_entreprise',
-        
+
         // Chemins des Fichiers
         'statuts_rcm',
         'bilan_comptes',
         'plan_tresorerie',
         'releves_bancaires',
         'rib_entreprise',
-        
+
         // Champs de Traitement et Clé Étrangère
-        'statut', 
-         'raison_rejet',
-    'admin_id', 
-    'date_traitement', 
-    'taux_interet', 
-    'duree_mois', 
-    'commentaire_approbation',
-   
+        'user_id',
+        'statut',
+        'raison_rejet',
+        'admin_id',
+        'date_traitement',
+        'taux_interet',
+        'commentaire_approbation',
+        'montant_accorde',
+
     ];
 
     /**
@@ -62,11 +63,9 @@ class Entreprise extends Model
         'releves_bancaires' => 'array', // Conversion Array <-> JSON pour la colonne TEXT
         'date_traitement'   => 'datetime',
         'date_creation'     => 'integer',
-        'raison_rejet'      => 'string',
-        
-       
+
     ];
-    
+
 
     public function getTypeAttribute()
     {
@@ -103,7 +102,7 @@ class Entreprise extends Model
         // La clé étrangère doit correspondre à la colonne de votre table 'documents' qui pointe vers la table 'entreprises'.
         // Si la colonne est nommée 'entreprise_id' dans la table 'documents', c'est la bonne configuration.
         return $this->hasMany(Document::class, 'entreprise_id');
-        
+
         // Si vous utilisez une clé générique comme 'demande_id' pour les deux types de demandes :
         // return $this->hasMany(Document::class, 'demande_id')->where('demande_type', 'entreprise');
         // (La méthode ci-dessus est plus complexe, la première est recommandée si vous avez des clés séparées.)
