@@ -38,7 +38,13 @@ Route::middleware('auth')->group(function () {
 // Routes administrateur
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+    Route::get('/admin/transactions', [AdminController::class, 'transactions'])->name('admin.transactions.index');
     // Autres routes admin
+        Route::get('/admin/paiements', [App\Http\Controllers\Admin\AdminPaiementController::class, 'index'])->name('admin.paiements.index');
+        Route::get('/admin/paiements/create', [App\Http\Controllers\Admin\AdminPaiementController::class, 'create'])->name('admin.paiements.create');
+        Route::post('/admin/paiements', [App\Http\Controllers\Admin\AdminPaiementController::class, 'store'])->name('admin.paiements.store');
+
     Route::get('/paiements/retards', [App\Http\Controllers\Admin\AdminPretController::class, 'latePaymentsIndex'])->name('paiements.retards');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');

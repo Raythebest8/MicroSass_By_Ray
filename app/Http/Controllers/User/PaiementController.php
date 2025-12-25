@@ -71,57 +71,37 @@ class PaiementController extends Controller
     /**
      * Affiche le formulaire de choix du prêt et du montant.
      */
-    public function checkout()
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+   public function checkout()
+{
+    $userId = Auth::id();
 
-        $userId = Auth::id();
+    // Récupérer les prêts Entreprise (On élargit la recherche du statut)
+    $demandesEntreprise = Entreprise::where('user_id', $userId)
+        ->whereIn('statut', ['Validée', 'validée', 'Validé', 'validé', 'en_cours'])
+        ->get()
+        ->map(function ($demande) {
+            $demande->type = 'entreprise';
+            // On s'assure d'avoir un libellé même si le motif est vide
+            $name = $demande->nom_entreprise ?? $demande->motif ?? 'Prêt sans motif';
+            $demande->libelle = $name . ' (Entreprise)';
+            return $demande;
+        });
 
-        // 1. Récupérer les prêts Entreprise actifs
-        $demandesEntreprise = Entreprise::where('user_id', $userId)
-            ->where('statut', 'Validée')
-            ->get()
-            ->map(function ($demande) {
-                $demande->type = 'entreprise';
-                $demande->libelle = $demande->motif . ' (Prêt Entreprise)';
-                return $demande;
-            });
+    // Récupérer les prêts Particulier
+    $demandesParticulier = Particulier::where('user_id', $userId)
+        ->whereIn('statut', ['Validée', 'validée', 'Validé', 'validé', 'en_cours'])
+        ->get()
+        ->map(function ($demande) {
+            $demande->type = 'particulier';
+            $demande->libelle = ($demande->motif ?? 'Prêt') . ' (Particulier)';
+            return $demande;
+        });
 
-        // 2. Récupérer les prêts Particulier actifs
-        $demandesParticulier = Particulier::where('user_id', $userId)
-            ->where('statut', 'Validée')
-            ->get()
-            ->map(function ($demande) {
-                $demande->type = 'particulier';
-                $demande->libelle = $demande->motif . ' (Prêt Particulier)';
-                return $demande;
-            });
+    $demandesActives = $demandesEntreprise->merge($demandesParticulier);
 
-        // 3. Combiner et trier
-        $demandesActives = $demandesEntreprise->merge($demandesParticulier)->sortBy('libelle');
+    return view('users.paiements.checkout', compact('demandesActives'));
+}
 
-        return view('users.paiements.checkout', compact('demandesActives'));
-    }
-
-//     public function checkout(Request $request, $echeance_id)
-// {
-//     $echeance = Echeance::findOrFail($echeance_id);
-//     $demande = $echeance->demande;
-
-//     // Calcul rapide du reste à payer
-//     $totalDu = $demande->echeances()->sum('montant_total');
-//     $dejaPaye = Paiement::whereHas('echeance', function($q) use ($demande) {
-//         $q->where('demande_id', $demande->id);
-//     })->where('statut', 'effectué')->sum('montant');
-
-//     if ($dejaPaye >= $totalDu) {
-//         return redirect()->back()->with('error', 'Ce prêt est déjà entièrement remboursé. Aucun paiement supplémentaire n\'est requis.');
-//     }
-
-//     // ... reste de ta logique de paiement (FedaPay, etc.)
-// }
 
     /**
      * Gère l'envoi du formulaire de paiement et simule l'initiation.
@@ -137,6 +117,7 @@ class PaiementController extends Controller
 
     $typeModel = "App\\Models\\" . ucfirst($request->type);
     $demande = $typeModel::findOrFail($request->demande_id);
+    
 
     // On cherche l'échéance en cours
     $echeance = Echeance::where('demande_id', $request->demande_id)

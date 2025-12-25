@@ -12,5 +12,10 @@ class AdminController extends Controller
     {
         return view('admin.dashboard');
     }
-    
+
+    // page des transactions (paiements)
+    public function transactions()
+    {
+        return view('admin.transactions.index');  
+    }
 }

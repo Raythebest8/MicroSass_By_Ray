@@ -19,11 +19,11 @@
             </li>
 
             <li>
-                <a href="#"><i class="fas fa-exchange-alt"></i> <span>Transaction</span></a>
+                <a href="{{ route('admin.transactions.index') }}"><i class="fas fa-exchange-alt"></i> <span>Transaction</span></a>
             </li>
 
             <li>
-                <a href="#"><i class="fas fa-credit-card"></i> <span>Paiement</span></a>
+                <a href="{{ route('admin.paiements.index') }}"><i class="fas fa-credit-card"></i> <span>Paiement</span></a>
             </li>
 
             <li>

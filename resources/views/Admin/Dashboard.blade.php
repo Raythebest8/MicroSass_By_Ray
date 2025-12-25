@@ -105,7 +105,7 @@
                     </table>
                 </div>
 
-                <!-- <div class="panel loan-requests">
+              <div class="panel loan-requests">
                     <h3>Demande de pret <i class="fas fa-plus-circle"></i></h3>
                     <div class="request-cards">
                         <div class="request-card">
@@ -127,7 +127,7 @@
                             <div class="client-name">Mr Raymond</div>
                         </div>
                     </div>
-                </div> -->
+                </div> 
 </div>
 
 

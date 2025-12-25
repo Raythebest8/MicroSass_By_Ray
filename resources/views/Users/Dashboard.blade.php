@@ -250,9 +250,8 @@
             datasets: [{
                 data: [{{ $totalRembourse }}, {{ max(0, $totalAccorde - $totalRembourse) }}],
                 backgroundColor: ['#10B981', '#E5E7EB'],
-                borderWidth: 0
-            }]
-        },
+                borderWidth: 0}]
+            }]},
         options: {
             responsive: true,
             maintainAspectRatio: false,
