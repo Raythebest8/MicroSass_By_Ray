@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\GestionUsersController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\User\DemandePretController;
-use App\Http\Controllers\User\PaiementController;
+
 use App\Models\Role;
 use App\Http\Controllers\Admin\AdminPretController;
 use App\Http\Controllers\Admin\AdminDocumentController;
@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\AdminGestionUsersController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\User\ProfileController;
 
-    use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\NewUserCredentials;
 use App\Models\User;
 
@@ -39,9 +39,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     // Autres routes admin
-    Route::get('/checkout', [PaiementController::class, 'checkout'])->name('checkout');
-    // Traite le formulaire et lance la passerelle de paiement
-    Route::post('/process', [PaiementController::class, 'process'])->name('process');
     Route::get('/paiements/retards', [App\Http\Controllers\Admin\AdminPretController::class, 'latePaymentsIndex'])->name('paiements.retards');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
@@ -67,7 +64,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Route pour afficher les détails d'une demande
     Route::get('/documents/{documentId}/download', [AdminDocumentController::class, 'download'])
         ->name('admin.documents.download');
-    Route::get( '/admin/documents/{document}/preview', [AdminDocumentController::class, 'preview']
+    Route::get(
+        '/admin/documents/{document}/preview',
+        [AdminDocumentController::class, 'preview']
     )->name('admin.documents.preview');
 
 
@@ -78,7 +77,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('demandes/{type}/{demandeId}/approuver', [AdminDemandeController::class, 'approuverDemande'])->name('admin.demandes.approuver');
     Route::post('demandes/{type}/{demandeId}/rejeter', [AdminDemandeController::class, 'rejeterDemande'])->name('admin.demandes.rejeter');
-   
+
 
     // Route de détails (show)
     Route::get('demandes/{type}/{demandeId}/details', [AdminDemandeController::class, 'show'])->name('admin.demandes.details');
@@ -126,13 +125,21 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
         // Pages de paiements
         Route::get('/paiements', [App\Http\Controllers\User\PaiementController::class, 'index'])->name('paiements.index');
+        Route::get('/paiements/checkout', [App\Http\Controllers\User\PaiementController::class, 'checkout'])->name('paiements.checkout');
+        // Modifie le ->name() pour ajouter 'users.' au début
+        Route::post('/paiements/process', [App\Http\Controllers\User\PaiementController::class, 'process'])->name('paiements.process');
+        Route::get('/paiements/historique', [App\Http\Controllers\User\PaiementController::class, 'historique'])->name('paiements.historique');
+
+        // Route::get('/paiements/recu/{id}', [App\Http\Controllers\User\PaiementController::class, 'downloadRecu'])->name('users.paiements.download');
 
         // Pages d'information
         Route::get('/conditions-generales', 'conditionsGenerales')->name('conditionsGenerales');
-        Route::get('/analytics', 'analytics')->name('analytics');
     });
     Route::get('/demande/{type}/{id}/details', [DemandePretController::class, 'details'])
-    ->name('users.demande.details');
+        ->name('users.demande.details');
     Route::get('/demande/{type}/{id}/download', [App\Http\Controllers\User\DemandePretController::class, 'downloadPDF'])
-    ->name('users.demande.download');
+        ->name('users.demande.download');
+    Route::get('/calendrier', [App\Http\Controllers\User\CalendarController::class, 'index'])->name('users.calendar');
+    Route::get('/paiements/recu/{id}', [App\Http\Controllers\User\PaiementController::class, 'downloadRecu'])->name('users.paiements.download');
+    Route::get('/paiements/{id}', [App\Http\Controllers\User\PaiementController::class, 'show'])->name('users.paiements.show');
 });

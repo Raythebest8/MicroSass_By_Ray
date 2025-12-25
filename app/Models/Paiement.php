@@ -16,9 +16,9 @@ class Paiement extends Model
         'montant',
         'methode_paiement',
         'reference_transaction',
-        'statut', // 'effectué', 'échec'
-    ];
+        'statut',
     
+    ];
     protected $casts = [
         'date_paiement' => 'datetime',
     ];
@@ -27,7 +27,7 @@ class Paiement extends Model
     {
         return $this->belongsTo(Echeance::class);
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);

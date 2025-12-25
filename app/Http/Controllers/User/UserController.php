@@ -7,24 +7,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Entreprise; 
 use App\Models\Particulier;
+use App\Models\Paiement;
+use App\Models\Echeance;
 
 
 class UserController extends Controller
 {
-    public function dashboard()
-    {
-        // Récupérer le nombre total de demandes (Entreprise et Particulier) de l'utilisateur connecté
-        
-        $totalDemandes = 0;
-        if (Auth::check()) {
-            $userId = Auth::id();
-            $totalDemandes += Entreprise::where('user_id', $userId)->count();
-            if (class_exists(Particulier::class)) {
-                $totalDemandes += Particulier::where('user_id', $userId)->count();
-            }
+public function dashboard()
+{
+    $user = auth()->user();
+
+    // 1. Récupération des données de base
+    $entreprises = \App\Models\Entreprise::where('user_id', $user->id)->get();
+    $particuliers = \App\Models\Particulier::where('user_id', $user->id)->get();
+    $toutesLesDemandes = $entreprises->concat($particuliers);
+
+    // 2. Calcul du Total Accordé avec intérêts (votre formule)
+    $totalAccorde = $toutesLesDemandes->where('statut', 'Validée')->sum(function($demande) {
+        $montant = $demande->montant_souhaite ?? 0;
+        $taux = $demande->taux_interet ?? 0;
+        return $montant + ($montant * ($taux / 100));
+    });
+
+    // 3. Calcul du Remboursé
+    $totalRembourse = \App\Models\Paiement::where('user_id', $user->id)
+                        ->where('statut', 'effectué')
+                        ->sum('montant');
+
+    // 4. Calcul de la PROCHAINE ÉCHÉANCE (Celle qui causait l'erreur)
+    $prochaineEcheance = \App\Models\Echeance::whereHasMorph('demande', 
+        [\App\Models\Particulier::class, \App\Models\Entreprise::class], 
+        function($query) use ($user) {
+            $query->where('user_id', $user->id);
         }
-        return view('users.dashboard', compact('totalDemandes'));
-    }
+    )->where('statut', '!=', 'payé')->orderBy('date_prevue', 'asc')->first();
+
+    // 5. État soldé
+    $estSolder = ($totalAccorde > 0 && ($totalAccorde - $totalRembourse) <= 0);
+
+    // 6. Envoi de TOUTES les variables (Vérifiez bien les noms ici)
+    return view('Users.Dashboard', compact(
+        'toutesLesDemandes', 
+        'totalAccorde', 
+        'totalRembourse', 
+        'prochaineEcheance', 
+        'estSolder'
+    ));
+}
     public function simulation()
     {
         return view('users.simulation');
@@ -53,9 +82,10 @@ class UserController extends Controller
         return view('users.conditions-generales');
     }
 
-    public function analytics()
+
+    public function calendrier()
     {
-        return view('users.analytics');
+        return view('users.calendrier');
     }
 
     

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Echeance;
@@ -27,7 +28,7 @@ class AmortizationService
 
         $montantEmprunte = $demande->montant_souhaite;
         $dureeMois = $demande->duree_mois;
-        
+
         // Calcul du taux mensuel
         $tauxMensuel = $tauxReelAnnuel / 12;
 
@@ -40,10 +41,10 @@ class AmortizationService
                 pow((1 + $tauxMensuel), $dureeMois) - 1
             );
         } else {
-            $annuite = $montantEmprunte / $dureeMois; 
+            $annuite = $montantEmprunte / $dureeMois;
         }
 
-        $annuite = ceil($annuite); 
+        $annuite = ceil($annuite);
         $capitalRestant = $montantEmprunte;
         $datePaiement = $dateDebut->copy();
 
@@ -61,13 +62,17 @@ class AmortizationService
 
             $capitalRestant -= $principalRembourse;
 
+            // Dans AmortizationService.php, à l'intérieur de la boucle for :
+
             $demande->echeances()->create([
-                'mois_numero'       => $i,
-                'date_prevue'       => $datePaiement,
+                'mois_numero'      => $i,
+                'date_prevue'      => $datePaiement,
                 'montant_principal' => (int) round($principalRembourse),
-                'montant_interet'   => (int) round($interetDu),
-                'montant_total'     => (int) round($annuite),
-                'statut'            => 'à payer',
+                'montant_interet'  => (int) round($interetDu),
+                // Correction : Utilisez 'montant_mensuel' si c'est le nom dans votre migration
+                'montant_mensuel'  => (int) round($annuite),
+                // Correction : Utilisez 'non_payé' (ou le terme exact que vous avez choisi)
+                'statut'           => 'non_payé',
             ]);
 
             $datePaiement->addMonthNoOverflow();

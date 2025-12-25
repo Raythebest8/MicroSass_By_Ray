@@ -32,11 +32,7 @@
                     <span class="mr-3 text-lg"><i class="fas fa-calendar-alt"></i></span> Échéances & Paiements
                 </a>
             </li>
-            <li>
-                <a href="{{ route('users.analytics') }}" id="nav-analytics" class="nav-item w-full text-left px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center group">
-                    <span class="mr-3 text-lg"><i class="fas fa-chart-line"></i></span> Suivi & Historique
-                </a>
-            </li>
+            
             <li>
                 <a href="{{ route('users.conditionsGenerales') }}" id="nav-analytics" class="nav-item w-full text-left px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center group">
                     <span class="mr-3 text-lg"><i class="fas fa-file-contract"></i></span> Conditions Générales
