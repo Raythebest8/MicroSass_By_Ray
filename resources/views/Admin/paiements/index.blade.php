@@ -10,7 +10,7 @@
                 <div class="bg-emerald-100 p-6 rounded-xl shadow-sm border border-emerald-200">
                     <p class="text-emerald-800 text-sm font-medium">Montant total encaissé</p>
                     <h2 class="text-2xl font-bold text-emerald-900 mt-1">
-                      {{ number_format($totalMontant, 0, ',', '.') }} Fcfa
+                        {{ number_format($totalMontant, 0, ',', '.') }} Fcfa
 
                     </h2>
                     <p class="text-emerald-600 text-xs mt-2">{{ now()->translatedFormat('d F Y') }}</p>
@@ -49,12 +49,29 @@
             </div>
         </div>
 
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold text-gray-700">Paiements récents</h3>
-            <a href="{{ route('admin.paiements.create') }}"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition shadow-sm flex items-center">
-                <i class="fas fa-plus mr-2"></i> Enregistrer un paiement
-            </a>
+        <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 p-4  dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center">
+                    <span class="w-2 h-8 bg-indigo-600 rounded-full mr-3"></span>
+                    Paiements récents
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 ml-5">Gestion et suivi des dernières transactions</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('admin.paiements.create') }}"
+                    class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md shadow-indigo-200 dark:shadow-none">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    Enregistrer un paiement
+                </a>
+
+                <a href="{{ route('admin.paiements.retards') }}"
+                    class="inline-flex items-center px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md shadow-amber-200 dark:shadow-none">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Voir les retards
+                </a>
+            </div>
         </div>
 
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
@@ -135,9 +152,9 @@
 
                                     @default
                                         <span class="text-gray-600 font-medium">
-                                            <i class="fas fa-cash-register mr-1"></i> {{ $paiement->methode_paiement ?? 'Guichet' }}
+                                            <i class="fas fa-cash-register mr-1"></i>
+                                            {{ $paiement->methode_paiement ?? 'Guichet' }}
                                         </span>
-                                        
                                 @endswitch
                             </td>
                             <td class="py-4 px-6 text-center">

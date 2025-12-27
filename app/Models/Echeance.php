@@ -21,9 +21,9 @@ class Echeance extends Model
         'statut', // 'à payer', 'payée', 'retard'
     ];
 
-    protected $casts = [
-        'date_prevue' => 'date',
-    ];
+   protected $casts = [
+    'date_prevue' => 'datetime',
+];
 
     /**
      * Relation générique vers la demande (Particulier ou Entreprise).

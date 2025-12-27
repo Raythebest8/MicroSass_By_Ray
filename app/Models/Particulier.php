@@ -83,4 +83,16 @@ public function documents(): HasMany
         // Supposons que la clé étrangère dans la table 'documents' soit 'particulier_id'
         return $this->hasMany(Document::class, 'particulier_id');
     }
+    // Dans App\Models\Entreprise ET App\Models\Particulier
+public function paiements()
+{
+    return $this->hasManyThrough(
+        \App\Models\Paiement::class, 
+        \App\Models\Echeance::class,
+        'demande_id',    // Clé étrangère sur la table echeances
+        'echeance_id',   // Clé étrangère sur la table paiements
+        'id',            // Clé locale sur la table demande (entreprise/particulier)
+        'id'             // Clé locale sur la table echeances
+    )->where('echeances.demande_type', get_class($this));
+}
 }

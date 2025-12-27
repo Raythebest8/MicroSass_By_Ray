@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Document;
 use App\Models\User;
+use App\Models\Echeance;
+use App\Models\Paiement;
 
 
 class Entreprise extends Model
@@ -52,6 +54,7 @@ class Entreprise extends Model
         'taux_interet',
         'commentaire_approbation',
         'montant_accorde',
+        
 
     ];
 
@@ -107,4 +110,17 @@ class Entreprise extends Model
         // return $this->hasMany(Document::class, 'demande_id')->where('demande_type', 'entreprise');
         // (La méthode ci-dessus est plus complexe, la première est recommandée si vous avez des clés séparées.)
     }
+    
+    // Dans App\Models\Entreprise ET App\Models\Particulier
+public function paiements()
+{
+    return $this->hasManyThrough(
+        \App\Models\Paiement::class, 
+        \App\Models\Echeance::class,
+        'demande_id',    // Clé étrangère sur la table echeances
+        'echeance_id',   // Clé étrangère sur la table paiements
+        'id',            // Clé locale sur la table demande (entreprise/particulier)
+        'id'             // Clé locale sur la table echeances
+    )->where('echeances.demande_type', get_class($this));
+}
 }

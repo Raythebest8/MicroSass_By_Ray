@@ -57,6 +57,7 @@ return new class extends Migration
             $table->decimal('montant_accorde', 15, 2)->nullable();
             $table->text('commentaire_approbation')->nullable();
             $table->text('raison_rejet')->nullable();
+        
 
             $table->timestamps();
         });

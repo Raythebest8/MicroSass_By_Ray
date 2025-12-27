@@ -44,12 +44,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/admin/paiements', [App\Http\Controllers\Admin\AdminPaiementController::class, 'index'])->name('admin.paiements.index');
         Route::get('/admin/paiements/create', [App\Http\Controllers\Admin\AdminPaiementController::class, 'create'])->name('admin.paiements.create');
         Route::post('/admin/paiements', [App\Http\Controllers\Admin\AdminPaiementController::class, 'store'])->name('admin.paiements.store');
+        Route::get('/admin/paiements/retards', [App\Http\Controllers\Admin\AdminPaiementController::class, 'retards'])->name('admin.paiements.retards');
 
     Route::get('/paiements/retards', [App\Http\Controllers\Admin\AdminPretController::class, 'latePaymentsIndex'])->name('paiements.retards');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
-    // Route pour une seule notification (utilisée par les liens bleus)
-    Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+    Route::get('/admin/rapports', [AdminController::class, 'rapports'])->name('admin.rapports.index');
+    Route::get('/admin/rapports/print', [AdminController::class, 'rapportsPrint'])->name('admin.rapports.print');
+// Route pour la page générale (celle qui est dans la sidebar)
+Route::get('/admin/remboursement', [AdminController::class, 'remboursementListe'])->name('admin.remboursement.index');
+
+// Route pour le détail d'un prêt spécifique (celle du bouton "Voir détails")
+Route::get('/admin/remboursement/{id}/{type}', [AdminController::class, 'remboursementDetail'])->name('admin.remboursement.details');  
+
+  Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
 
     // Route pour TOUT marquer comme lu (utilisée par le bouton vert)
     Route::post('/notifications/mark-all', function () {
@@ -58,6 +66,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('admin.notifications.markAllAsRead');
 
     Route::get('/demandes', [AdminDemandeController::class, 'index'])->name('admin.demandes.index');
+    Route::get('/admin/pret', [AdminController::class, 'pret'])->name('admin.pret.index');
 
     // compte utilisateur
     Route::get('/compte_client', [AdminGestionUsersController::class, 'index'])->name('admin.compte_client.index');

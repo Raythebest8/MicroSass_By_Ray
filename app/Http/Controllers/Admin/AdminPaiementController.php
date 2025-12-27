@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Models\Echeance;
 
 class AdminPaiementController extends Controller
 {
@@ -25,11 +26,11 @@ class AdminPaiementController extends Controller
         }
 
         // Filtre par méthode de paiement
-        if ($request->filled('methode')) {
-            $query->where('methode', $request->methode);
+        if ($request->filled('methode_paiement')) {
+            $query->where('methode_paiement', $request->methode_paiement);
         }
         // Calcul du montant total des paiements filtrés
-$totalMontant = (clone $query)->sum('montant');
+        $totalMontant = (clone $query)->sum('montant');
 
         $paiements = $query->latest()->paginate(10)->withQueryString();
 
@@ -84,11 +85,22 @@ $totalMontant = (clone $query)->sum('montant');
             'statut' => 'effectué',
             'echeance_id' => $echeanceId,
             'date_paiement' => $request->date_paiement,
-            
+
         ]);
 
 
         return redirect()->route('admin.paiements.index')
             ->with('success', "Paiement enregistré avec la référence : $reference");
+    }
+
+    public function retards()
+    {
+        // On récupère les échéances dont la date_prevue est passée et non payées
+        $echeances = \App\Models\Echeance::where('date_prevue', '<', now())
+            ->where('statut', '!=', 'payé')
+            ->with('demande') // Charge la relation polymorphique
+            ->get();
+
+        return view('admin.paiements.retards', compact('echeances'));
     }
 }

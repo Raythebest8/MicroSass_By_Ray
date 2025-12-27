@@ -39,11 +39,11 @@
             </li>
 
             <li>
-                <a href="#"><i class="fas fa-money-check-alt"></i> <span>Prêt</span></a>
+                <a href="{{ route('admin.pret.index') }}"><i class="fas fa-money-check-alt"></i> <span>Prêt</span></a>
             </li>
 
             <li>
-                <a href="#"><i class="fas fa-undo"></i> <span>Remboursement</span></a>
+                <a href="{{ route('admin.remboursement.index') }}"><i class="fas fa-undo"></i> <span>Remboursement</span></a>
             </li>
 
             <li>
@@ -51,7 +51,7 @@
             </li>
 
             <li>
-                <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span>Rapports</span></a>
+                <a href="{{ route('admin.rapports.index') }}"><i class="fas fa-file-invoice-dollar"></i> <span>Rapports</span></a>
             </li>
 
             <li>
