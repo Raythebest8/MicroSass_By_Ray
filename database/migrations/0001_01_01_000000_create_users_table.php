@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('numero_compte', 20)->unique()->nullable();
             $table->string('nom');
@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('image_path')->nullable(); // ton image
             $table->enum('role', ['user', 'admin', 'manager'])->default('user'); // rôle de l'utilisateur
+            // Dans la migration de vos utilisateurs ou une nouvelle migration :
+            $table->decimal('solde', 15, 2)->default(0); // Solde du compte utilisateur
             $table->rememberToken();
             $table->timestamps();
         });

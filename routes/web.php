@@ -18,6 +18,7 @@ use App\Http\Controllers\User\ProfileController;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewUserCredentials;
+use App\Models\Transaction;
 use App\Models\User;
 
 Route::get('/', function () {
@@ -47,6 +48,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/admin/paiements/retards', [App\Http\Controllers\Admin\AdminPaiementController::class, 'retards'])->name('admin.paiements.retards');
 
     Route::get('/paiements/retards', [App\Http\Controllers\Admin\AdminPretController::class, 'latePaymentsIndex'])->name('paiements.retards');
+    //   RECU DE Paiement
+Route::get('/admin/paiements/{id}/recu', [App\Http\Controllers\Admin\AdminPaiementController::class, 'downloadRecu'])->name('admin.paiements.downloadRecu');
+// Transaction
+    Route::get('/admin/transactions', [App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
+    Route::get('/admin/transactions/create', [App\Http\Controllers\Admin\TransactionController::class, 'create'])->name('admin.transactions.create');
+    Route::get('/admin/transactions/{transaction}', [App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.transactions.show');
+    Route::post('/admin/transactions', [App\Http\Controllers\Admin\TransactionController::class, 'store'])->name('admin.transactions.store');
+    Route::get('/admin/transactions/{transaction}/receipt', [App\Http\Controllers\Admin\TransactionController::class, 'downloadReceipt'])->name('admin.transactions.downloadReceipt');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::get('/admin/rapports', [AdminController::class, 'rapports'])->name('admin.rapports.index');
@@ -58,7 +67,6 @@ Route::get('/admin/remboursement', [AdminController::class, 'remboursementListe'
 Route::get('/admin/remboursement/{id}/{type}', [AdminController::class, 'remboursementDetail'])->name('admin.remboursement.details');  
 
   Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
-
     // Route pour TOUT marquer comme lu (utilisée par le bouton vert)
     Route::post('/notifications/mark-all', function () {
         Auth::user()->unreadNotifications->markAsRead();
@@ -71,6 +79,7 @@ Route::get('/admin/remboursement/{id}/{type}', [AdminController::class, 'rembour
     // compte utilisateur
     Route::get('/compte_client', [AdminGestionUsersController::class, 'index'])->name('admin.compte_client.index');
     Route::get('/compte_client/create', [AdminGestionUsersController::class, 'create'])->name('admin.compte_client.create');
+
 
     Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', AdminGestionUsersController::class);

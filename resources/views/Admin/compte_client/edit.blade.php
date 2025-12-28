@@ -1,107 +1,120 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Modifier le Compte Utilisateur : {{ $user->prenom }} {{ $user->nom }}</div>
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        
+        <div class="mb-8">
+            <a href="{{ route('admin.users.index') }}" class="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-orange-600 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Annuler et revenir
+            </a>
+        </div>
 
-                <div class="card-body">
-                    {{-- Le formulaire doit pointer vers la route 'update' et utiliser la méthode PATCH/PUT --}}
-                    <form method="POST" action="{{ route('admin.users.update', $user) }}">
-                        @csrf
-                        @method('PATCH') 
+        <div class="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+            <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data" class="p-8 md:p-12">
+                @csrf
+                @method('PATCH')
+
+                <div class="flex flex-col lg:flex-row gap-12">
+                    
+                    <div class="lg:w-1/3 flex flex-col items-center">
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Photo de profil</h3>
                         
-                        {{-- Section Informations Personnelles --}}
-                        <h3>Informations Personnelles</h3>
-                        <hr>
-
-                        <div class="row">
-                            {{-- Champ Nom --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
-                                {{-- Utilisation de $user->nom pour pré-remplir, ou old('nom') après une erreur --}}
-                                <input type="text" class="form-control @error('nom') is-invalid @enderror" id="nom" name="nom" value="{{ old('nom', $user->nom) }}" required>
-                                @error('nom')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                        <div class="relative group cursor-pointer">
+                            <div class="h-48 w-48 rounded-[2rem] bg-gray-100 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center transition-all group-hover:ring-4 group-hover:ring-orange-100">
+                                @if($user->photo)
+                                    <img id="preview" src="{{ asset('storage/' . $user->photo) }}" class="h-full w-full object-cover">
+                                @else
+                                    <div id="placeholder" class="text-orange-600 text-5xl font-black">
+                                        {{ strtoupper(substr($user->prenom, 0, 1)) }}{{ strtoupper(substr($user->nom, 0, 1)) }}
+                                    </div>
+                                    <img id="preview" src="#" class="hidden h-full w-full object-cover">
+                                @endif
                             </div>
                             
-                            {{-- Répétez ce modèle pour tous les autres champs (prenom, telephone, profession, situation_matrimonial, email, role) --}}
-                            
-                            {{-- Champ Prénom --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('prenom') is-invalid @enderror" id="prenom" name="prenom" value="{{ old('prenom', $user->prenom) }}" required>
-                                @error('prenom')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <label for="photo" class="absolute -bottom-2 -right-2 bg-gray-900 text-white p-3 rounded-2xl shadow-xl hover:bg-orange-600 transition-colors cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </label>
+                            <input type="file" id="photo" name="photo" class="hidden" accept="image/*" onchange="previewImage(event)">
+                        </div>
+                        <p class="mt-4 text-[10px] text-gray-400 font-medium italic text-center px-4">Cliquez sur l'icône pour modifier la photo (JPG, PNG max 2Mo)</p>
+                    </div>
+
+                    <div class="lg:w-2/3">
+                        <div class="mb-10 text-center lg:text-left">
+                            <h2 class="text-3xl font-black text-gray-900 leading-tight">Modifier le profil</h2>
+                            <p class="text-gray-400 font-medium">Mise à jour des accès de {{ $user->prenom }}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Nom</label>
+                                <input type="text" name="nom" value="{{ old('nom', $user->nom) }}" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700 @error('nom') border-red-500 @enderror" required>
+                                @error('nom') <span class="text-red-500 text-[10px] ml-2">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Prénom</label>
+                                <input type="text" name="prenom" value="{{ old('prenom', $user->prenom) }}" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700 @error('prenom') border-red-500 @enderror" required>
                             </div>
                         </div>
 
-                        {{-- Champ Téléphone --}}
-                        <div class="mb-3">
-                            <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('telephone') is-invalid @enderror" id="telephone" name="telephone" value="{{ old('telephone', $user->telephone) }}" required>
-                            @error('telephone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Téléphone</label>
+                                <input type="text" name="telephone" value="{{ old('telephone', $user->telephone) }}" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Profession</label>
+                                <input type="text" name="profession" value="{{ old('profession', $user->profession) }}" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700" required>
+                            </div>
                         </div>
 
-                        <h3>Statut</h3>
-                        <hr>
-
-                        <div class="mb-3">
-                            <label for="profession" class="form-label">Profession <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('profession') is-invalid @enderror" id="profession" name="profession" value="{{ old('profession', $user->profession) }}" required>
-                            @error('profession')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="space-y-1 mb-8">
+                            <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Adresse Email</label>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="situation_matrimonial" class="form-label">Situation Matrimoniale <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('situation_matrimonial') is-invalid @enderror" id="situation_matrimonial" name="situation_matrimonial" value="{{ old('situation_matrimonial', $user->situation_matrimonial) }}" required>
-                            @error('situation_matrimonial')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Rôle Système</label>
+                                <select name="role" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700 appearance-none">
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role }}" {{ old('role', $user->role) == $role ? 'selected' : '' }}>{{ ucfirst($role) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Situation Matrimoniale</label>
+                                <input type="text" name="situation_matrimonial" value="{{ old('situation_matrimonial', $user->situation_matrimonial) }}" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all font-bold text-gray-700" required>
+                            </div>
                         </div>
 
-                        <h3>Accès et Rôle</h3>
-                        <hr>
-                        
-                        {{-- Champ Email --}}
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Adresse Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="flex items-center justify-end gap-4 border-t pt-8">
+                            <a href="{{ route('admin.users.index') }}" class="text-sm font-bold text-gray-400 hover:text-gray-600 px-6">Annuler</a>
+                            <button type="submit" class="bg-gray-900 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-orange-600 hover:shadow-2xl hover:shadow-orange-200 transition-all">
+                                Enregistrer les modifications
+                            </button>
                         </div>
-
-                        {{-- Champ Rôle --}}
-                        <div class="mb-4">
-                            <label for="role" class="form-label">Rôle Attribué <span class="text-danger">*</span></label>
-                            <select id="role" name="role" class="form-control @error('role') is-invalid @enderror" required>
-                                <option value="">-- Choisir un rôle --</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role }}" {{ old('role', $user->role) == $role ? 'selected' : '' }}>
-                                        {{ ucfirst($role) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('role')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn btn-warning btn-lg">Mettre à jour l'utilisateur</button>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Annuler</a>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        const preview = document.getElementById('preview');
+        const placeholder = document.getElementById('placeholder');
+        
+        reader.onload = function(){
+            preview.src = reader.result;
+            preview.classList.remove('hidden');
+            if(placeholder) placeholder.classList.add('hidden');
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
 @endsection

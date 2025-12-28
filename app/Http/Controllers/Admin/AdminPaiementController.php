@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\Echeance;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminPaiementController extends Controller
 {
@@ -103,4 +104,48 @@ class AdminPaiementController extends Controller
 
         return view('admin.paiements.retards', compact('echeances'));
     }
+
+public function downloadRecu($id)
+{
+    // Récupérer le paiement avec ses relations
+    $paiement = \App\Models\Paiement::with(['echeance.demande'])->findOrFail($id);
+    $echeance = $paiement->echeance;
+    $demande = $echeance->demande;
+
+    // 1. Calcul de l'index (Position de l'échéance)
+    $index = $demande->echeances->sortBy('id')->values()->search(function ($item) use ($echeance) {
+        return $item->id === $echeance->id;
+    }) + 1;
+
+    // 2. Calcul des intérêts et principal
+    $taux = $demande->taux_interet ?? 0;
+    $nbTotal = $demande->echeances->count();
+    $interet = ($demande->montant_accorde * ($taux / 100)) / ($nbTotal ?: 1);
+    $principal = $echeance->montant - $interet;
+
+    // 3. Calcul du SOLDE RESTANT réel
+    // On prend le montant total dû (capital + intérêts) moins ce qui a déjà été payé
+    $totalDu = $demande->echeances->sum('montant');
+    $dejaPaye = \App\Models\Paiement::whereHas('echeance', function($q) use ($demande) {
+        $q->where('demande_id', $demande->id)->where('demande_type', get_class($demande));
+    })->sum('montant');
+
+    $solde_restant = $totalDu - $dejaPaye;
+
+    // 4. Préparation des données pour la vue
+    $data = [
+        'echeance'      => $echeance,
+        'paiement'      => $paiement,
+        'reference'     => 'REC-' . date('Ymd') . '-' . str_pad($paiement->id, 5, '0', STR_PAD_LEFT),
+        'type'          => (get_class($demande) === 'App\Models\Entreprise') ? 'entreprise' : 'particulier',
+        'principal'     => $principal,
+        'interet'       => $interet,
+        'index'         => $index,
+        'solde_restant' => $solde_restant, // Cette variable affichera le montant rouge
+    ];
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('Admin.paiements.recu_pdf', $data);
+    
+    return $pdf->download('Recu_' . $data['reference'] . '.pdf');
+}
 }

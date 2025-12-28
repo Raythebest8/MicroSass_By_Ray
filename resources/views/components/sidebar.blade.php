@@ -1,7 +1,7 @@
 <aside class="sidebar">
     <div class="top-section">
         <div class="logo">
-            <img src="{{ asset('assets/images/nCFd0q.jpg') }}" alt="Logo"> Microsass
+            <img src="{{ asset('assets/images/nCFd0q.jpg') }}" alt="Logo"> PROCREDIT
         </div>
         <div class="toggle_menu">
             <i class="fas fa-bars"></i>
@@ -44,10 +44,6 @@
 
             <li>
                 <a href="{{ route('admin.remboursement.index') }}"><i class="fas fa-undo"></i> <span>Remboursement</span></a>
-            </li>
-
-            <li>
-                <a href="#"><i class="fas fa-users"></i> <span>Utilisateurs</span></a>
             </li>
 
             <li>

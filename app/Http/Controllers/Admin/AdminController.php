@@ -7,13 +7,92 @@ use Illuminate\Http\Request;
 use App\Models\Entreprise;
 use App\Models\Particulier;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Models\Paiement;
+use App\Models\User;
 
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        return view('admin.dashboard');
+        // On récupère le nombre total de comptes
+        $totalAccounts = User::count();
+
+        // On récupère le nombre de nouveaux comptes cette semaine
+        $newAccountsThisWeek = User::where('created_at', '>=', now()->startOfWeek())->count();
+
+        // Statistiques des Prêts (Entreprise + Particulier)
+        $totalLoans = Entreprise::count() + Particulier::count();
+        $newLoansThisWeek = Entreprise::where('created_at', '>=', now()->startOfWeek())->count()
+            + Particulier::where('created_at', '>=', now()->startOfWeek())->count();
+
+        // Montant du crédit accordé
+        $totalCredit = (Entreprise::sum('montant_accorde') ?? 0) + (Particulier::sum('montant_souhaite') ?? 0);
+        $newCreditThisWeek = (Entreprise::where('created_at', '>=', now()->startOfWeek())->sum('montant_accorde') ?? 0)
+            + (Particulier::where('created_at', '>=', now()->startOfWeek())->sum('montant_souhaite') ?? 0);
+
+        // Paiements
+        $totalPayments = Paiement::where('statut', 'effectué')->sum('montant') ?? 0;
+
+        // Calcul du pourcentage global de recouvrement
+        $percentageOfCreditReceived = $totalCredit > 0 ? round(($totalPayments / $totalCredit) * 100, 2) : 0;
+
+        // --- AJOUT POUR VOS CERCLES DE STATISTIQUES ---
+        $countEnt = Entreprise::count();
+        $countPart = Particulier::count();
+        $totalEntities = ($countEnt + $countPart) ?: 1; // Évite la division par zéro
+
+        $percentEntreprise = round(($countEnt / $totalEntities) * 100);
+        $percentParticulier = round(($countPart / $totalEntities) * 100);
+
+        // Exemple si vous avez une table 'Transactions' liée à 'Clients'
+        $recentTransactions = \App\Models\Transaction::with(['user']) // Ajustez selon vos modèles
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        // 1. Récupérer les 3 dernières entreprises en attente
+        $demandesEntreprise = \App\Models\Entreprise::where('statut', 'en attente')
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function ($item) {
+                $item->client_nom = $item->nom_entreprise; // Harmonisation du nom
+                $item->categorie = 'Professionnel';       // Pour l'icône
+                return $item;
+            });
+
+        // 2. Récupérer les 3 derniers particuliers en attente
+        $demandesParticulier = \App\Models\Particulier::where('statut', 'en attente')
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function ($item) {
+                $item->client_nom = $item->nom . ' ' . $item->prenom; // Harmonisation
+                $item->categorie = 'Personnel';
+                return $item;
+            });
+
+        // 3. Fusionner, trier par date et ne garder que les 3 dernières au total
+        $recentRequests = $demandesEntreprise->concat($demandesParticulier)
+            ->sortByDesc('created_at')
+            ->take(3);
+
+        return view('admin.dashboard', compact(
+            'totalAccounts',
+            'newAccountsThisWeek',
+            'totalLoans',
+            'newLoansThisWeek',
+            'totalCredit',
+            'newCreditThisWeek',
+            'totalPayments',
+            'percentageOfCreditReceived',
+            'percentEntreprise',
+            'percentParticulier',
+            'recentTransactions',
+            'recentRequests'
+        ));
     }
 
     // RAPPORTS
